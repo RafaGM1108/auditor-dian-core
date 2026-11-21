@@ -57,7 +57,6 @@ Pensado para publicarse (blog, GitHub Pages, LinkedIn o como artículo) y que le
 8. **Limitaciones y riesgos** — lo que no hace y por qué.
 9. **Modelo de negocio** — Free, Pro, Team y módulo Empresas.
 10. **Próximos pasos**.
-11. **Cronograma real vs. planeado** — tabla comparando fechas.
-12. **Fuentes**.
+11. **Fuentes**.
 
-Lo que **no** va en el informe: código de `pro`, reglas tributarias detalladas de pago, datos de clientes.
+Lo que **no** va en el informe: código de `pro`, reglas tributarias detalladas de pago, datos de clientes ni el cronograma (decisión del equipo, 2026-11-20).

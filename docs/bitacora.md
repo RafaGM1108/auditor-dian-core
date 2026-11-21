@@ -10,6 +10,13 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha, qué se hizo, 
 
 
 
+
+## 2026-11-20 — Release 0.4.1 y el informe sin cronograma
+
+**Qué se hizo**
+- Release `v0.4.1` en GitHub con `auditor-dian-0.4.1.mcpb` y su SHA-256, e instrucciones de instalación para el contador. El README enlaza a la última versión para descargar el paquete. Antes de subirlo se revisó su contenido, incluido el paquete Python que lleva adentro: autor con el correo anónimo y sin datos reales.
+- El informe ya no incluye la sección "Cronograma real frente al planeado", por decisión del equipo; también se quitó de la estructura del informe en los cronogramas de `core` y `pro`. El PDF queda en 4 páginas.
+
 ## 2026-11-20 — `core` es público
 
 **Qué se hizo**

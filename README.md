@@ -17,7 +17,7 @@ Estado: `core` v0.1 interno (etiqueta `v0.1.0`): parser, base por cliente, seis 
 No hace falta saber programar ni contratar un servidor: Auditor DIAN corre en tu propio computador, dentro de Claude Desktop.
 
 1. **Instala [Claude Desktop](https://claude.ai/download)** e inicia sesión.
-2. **Instala la extensión**: abre el archivo `auditor-dian-<versión>.mcpb` que te compartieron (doble clic) o, en Claude Desktop, *Configuración → Extensiones → Configuración avanzada → Instalar extensión*. Elige la **carpeta de datos**: ahí se guardan las bases de tus clientes (por defecto `~/.auditor-dian`). Claude Desktop instala lo demás por su cuenta; la primera vez puede tardar un par de minutos.
+2. **Instala la extensión**: descarga `auditor-dian-<versión>.mcpb` de la [última versión](https://github.com/RafaGM1108/auditor-dian-core/releases/latest) y ábrelo (doble clic) o, en Claude Desktop, *Configuración → Extensiones → Configuración avanzada → Instalar extensión*. Elige la **carpeta de datos**: ahí se guardan las bases de tus clientes (por defecto `~/.auditor-dian`). Claude Desktop instala lo demás por su cuenta; la primera vez puede tardar un par de minutos.
 3. **Descarga las facturas** del correo como siempre: los ZIP quedan en tu carpeta de Descargas.
 4. **Escríbele a Claude**: *Carga mis facturas*. Claude revisa tu carpeta de Descargas, mira a qué empresa o persona le vendieron cada factura y te dice cuáles son de clientes que aún no tienes registrados, con su nombre. Respóndele *sí, créalos* y vuelve a pedir *carga mis facturas*. Cada factura queda guardada en su cliente.
    - Si las guardaste en otra carpeta, nómbrala como la ves: *carga las facturas de la carpeta "facturas enero" del Escritorio*. No hace falta escribir rutas.
