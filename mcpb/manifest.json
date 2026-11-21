@@ -1,0 +1,112 @@
+{
+  "manifest_version": "0.4",
+  "name": "auditor-dian",
+  "display_name": "Auditor DIAN",
+  "version": "VERSION",
+  "description": "Carga y consulta las facturas electrónicas DIAN que recibió cada cliente: IVA, retenciones, compras, facturas a crédito y anulaciones, con sus CUFE.",
+  "long_description": "Auditor DIAN convierte los ZIP y XML de las facturas electrónicas que recibe cada cliente en una base local, y Claude la consulta.\n\n### Cómo empezar\n1. Descarga del correo las facturas que recibieron tus clientes: los ZIP quedan en Descargas.\n2. Escríbele a Claude: *carga mis facturas*. Revisa tu carpeta de Descargas, reparte cada factura al cliente que la compró y te dice qué clientes aún no tienes registrados, con su nombre, para que los crees con un *sí*.\n3. Pregunta. Si las facturas están en otra carpeta, nómbrala como la ves (*la carpeta \"facturas enero\" del Escritorio*): no hace falta escribir rutas. El NIT se puede escribir con puntos o dígito de verificación. Para saber si ya tienes a un cliente: *¿ya tengo registrada a Mi Cliente SAS?* o *¿qué meses tengo cargados?*.\n\n### Qué puedes preguntarle\n- Compras, IVA y retenciones de un periodo o bimestre, con los CUFE que respaldan cada cifra.\n- Buscar facturas por proveedor, fechas, valor, tipo o medio de pago.\n- Facturas a crédito, facturas repetidas y notas crédito que las anulan.\n- Exportar cualquier informe a un Excel nuevo.\n\n### Cómo cuida tus datos\n- Todo corre en tu equipo: no hay llamadas a la DIAN ni a otros servicios. Claude solo ve lo que las herramientas le responden en la conversación.\n- Las cifras salen de SQL, nunca las calcula el modelo.\n- Nada se borra ni se modifica: cargar facturas solo agrega, y exportar crea un Excel nuevo sin sobrescribir.\n\n### Si algo falla\nPídele a Claude *el diagnóstico de Auditor DIAN* y compártelo al reportar el problema: trae la versión, los clientes, cuántos documentos hay y las advertencias de lectura, sin montos.\n\n> No es un producto oficial de la DIAN ni está afiliado a ella. Las cifras requieren revisión de un contador.",
+  "author": {
+    "name": "RafaGM1108"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RafaGM1108/auditor-dian-core"
+  },
+  "icon": "icon.png",
+  "icons": [
+    {
+      "src": "icon.png",
+      "size": "256x256"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "dian",
+    "factura electrónica",
+    "contabilidad",
+    "iva",
+    "colombia"
+  ],
+  "server": {
+    "type": "uv",
+    "entry_point": "server/main.py",
+    "mcp_config": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "${__dirname}",
+        "server/main.py"
+      ],
+      "env": {
+        "AUDITOR_DIAN_HOME": "${user_config.carpeta_datos}"
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "listar_clientes",
+      "description": "Lista los clientes registrados en este equipo (NIT o cédula y nombre), o busca uno."
+    },
+    {
+      "name": "historial_cliente",
+      "description": "Ficha de un cliente registrado: nombre, fecha de registro, cuántos documentos tiene por tipo y por mes de emisión, primera y última fecha de emisión, y cada día en que se cargaron facturas con sus archivos, documentos y errores."
+    },
+    {
+      "name": "buscar_documentos",
+      "description": "Busca facturas y notas que recibió el cliente, combinando filtros: proveedor, fechas, valor, tipo de documento, CUFE o medio de pago."
+    },
+    {
+      "name": "resumen_periodo",
+      "description": "Totales del periodo con los CUFE que los respaldan: compras (total y por tipo de documento), IVA (total y por tarifa) y retenciones por tipo. Las notas crédito y de ajuste restan."
+    },
+    {
+      "name": "facturas_credito",
+      "description": "Facturas recibidas con forma de pago a crédito en el periodo, con proveedor, valor y vencimiento."
+    },
+    {
+      "name": "duplicados_y_anulaciones",
+      "description": "Facturas del mismo proveedor y número con distinto CUFE (posibles duplicados) y facturas anuladas total o parcialmente por notas crédito (tolerancia de 2 pesos)."
+    },
+    {
+      "name": "exportar_informe",
+      "description": "Guarda un informe del periodo en un Excel nuevo, con una hoja de resumen y otra de detalle con los CUFE."
+    },
+    {
+      "name": "crear_cliente",
+      "description": "Registra un cliente nuevo en este equipo para poder cargar y consultar sus facturas."
+    },
+    {
+      "name": "ingerir_facturas",
+      "description": "Carga en un cliente las facturas electrónicas de un ZIP o XML (como llegan por correo) o de una carpeta completa."
+    },
+    {
+      "name": "ingerir_por_cliente",
+      "description": "Carga facturas de varios clientes a la vez: cada archivo va al cliente que aparece como comprador en la factura."
+    },
+    {
+      "name": "diagnostico",
+      "description": "Estado de la instalación para reportar un problema: versión, carpeta de datos, plugins y, por cliente, documentos, archivos cargados, última carga y advertencias de lectura (las últimas 20). No incluye montos ni contenido de las facturas, así que se puede compartir."
+    }
+  ],
+  "tools_generated": true,
+  "user_config": {
+    "carpeta_datos": {
+      "type": "directory",
+      "title": "Carpeta de datos",
+      "description": "Carpeta donde se guardan las bases de los clientes. Por defecto ~/.auditor-dian.",
+      "required": true,
+      "default": "${HOME}/.auditor-dian"
+    }
+  },
+  "compatibility": {
+    "platforms": [
+      "darwin",
+      "win32",
+      "linux"
+    ],
+    "runtimes": {
+      "python": ">=3.11"
+    }
+  }
+}

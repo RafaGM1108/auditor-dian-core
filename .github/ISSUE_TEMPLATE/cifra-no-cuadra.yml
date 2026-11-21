@@ -1,0 +1,27 @@
+name: Una cifra no cuadra
+description: Un total, IVA, retención o factura que no coincide con lo que esperabas.
+labels: [cifra]
+body:
+  - type: textarea
+    id: pregunta
+    attributes:
+      label: Pregunta y respuesta
+      description: Qué le preguntaste a Claude y qué cifra respondió.
+    validations:
+      required: true
+  - type: textarea
+    id: esperado
+    attributes:
+      label: Cifra esperada y de dónde sale
+      description: Qué valor esperabas y de qué documento o informe lo sacaste (por ejemplo, el PDF de la factura, tu software contable). Indica el CUFE o prefijo y número si lo tienes.
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostico
+    attributes:
+      label: Diagnóstico
+      description: Pídele a Claude "dame el diagnóstico de Auditor DIAN" y pega aquí la respuesta.
+      render: json
+  - type: markdown
+    attributes:
+      value: "**No adjuntes facturas reales ni datos de clientes.**"

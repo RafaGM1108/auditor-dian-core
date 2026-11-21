@@ -1,0 +1,27 @@
+name: Algo salió mal
+description: Un error, una herramienta que no responde o una factura que no se cargó.
+labels: [error]
+body:
+  - type: textarea
+    id: que_paso
+    attributes:
+      label: ¿Qué pasó?
+      description: Qué le pediste a Claude, qué respondió y qué esperabas.
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostico
+    attributes:
+      label: Diagnóstico
+      description: Pídele a Claude "dame el diagnóstico de Auditor DIAN" y pega aquí la respuesta. No trae montos ni contenido de las facturas.
+      render: json
+    validations:
+      required: true
+  - type: input
+    id: sistema
+    attributes:
+      label: Sistema operativo
+      placeholder: Windows 11, macOS 15, Ubuntu 24.04...
+  - type: markdown
+    attributes:
+      value: "**No adjuntes facturas reales ni datos de clientes.** Si hace falta un archivo para reproducir el error, dilo y lo coordinamos en privado."

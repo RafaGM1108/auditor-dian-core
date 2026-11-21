@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Fixture sintético: anula parcialmente la línea 2 de factura_01.xml. -->
+<CreditNote xmlns="urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2"
+            xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+            xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+  <cbc:UBLVersionID>UBL 2.1</cbc:UBLVersionID>
+  <cbc:ID>NC55</cbc:ID>
+  <cbc:UUID schemeID="1" schemeName="CUDE-SHA384">cude0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000091</cbc:UUID>
+  <cbc:IssueDate>2026-01-20</cbc:IssueDate>
+  <cbc:IssueTime>08:00:00-05:00</cbc:IssueTime>
+  <cbc:CreditNoteTypeCode>91</cbc:CreditNoteTypeCode>
+  <cbc:DocumentCurrencyCode>COP</cbc:DocumentCurrencyCode>
+  <cac:BillingReference>
+    <cac:InvoiceDocumentReference>
+      <cbc:ID>FV1001</cbc:ID>
+      <cbc:UUID schemeName="CUFE-SHA384">cufe0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001</cbc:UUID>
+      <cbc:IssueDate>2026-01-15</cbc:IssueDate>
+    </cac:InvoiceDocumentReference>
+  </cac:BillingReference>
+  <cac:AccountingSupplierParty>
+    <cac:Party>
+      <cac:PartyTaxScheme>
+        <cbc:RegistrationName>PROVEEDOR UNO SAS</cbc:RegistrationName>
+        <cbc:CompanyID schemeAgencyID="195" schemeID="1" schemeName="31">900000001</cbc:CompanyID>
+      </cac:PartyTaxScheme>
+    </cac:Party>
+  </cac:AccountingSupplierParty>
+  <cac:AccountingCustomerParty>
+    <cac:Party>
+      <cac:PartyTaxScheme>
+        <cbc:RegistrationName>CLIENTE DE PRUEBA SAS</cbc:RegistrationName>
+        <cbc:CompanyID schemeAgencyID="195" schemeID="9" schemeName="31">900000009</cbc:CompanyID>
+      </cac:PartyTaxScheme>
+    </cac:Party>
+  </cac:AccountingCustomerParty>
+  <cac:PaymentMeans><cbc:ID>1</cbc:ID></cac:PaymentMeans>
+  <cac:TaxTotal>
+    <cbc:TaxAmount currencyID="COP">500.00</cbc:TaxAmount>
+    <cac:TaxSubtotal>
+      <cbc:TaxableAmount currencyID="COP">10000.00</cbc:TaxableAmount>
+      <cbc:TaxAmount currencyID="COP">500.00</cbc:TaxAmount>
+      <cac:TaxCategory>
+        <cbc:Percent>5.00</cbc:Percent>
+        <cac:TaxScheme><cbc:ID>01</cbc:ID><cbc:Name>IVA</cbc:Name></cac:TaxScheme>
+      </cac:TaxCategory>
+    </cac:TaxSubtotal>
+  </cac:TaxTotal>
+  <cac:LegalMonetaryTotal>
+    <cbc:LineExtensionAmount currencyID="COP">10000.00</cbc:LineExtensionAmount>
+    <cbc:TaxExclusiveAmount currencyID="COP">10000.00</cbc:TaxExclusiveAmount>
+    <cbc:PayableAmount currencyID="COP">10500.00</cbc:PayableAmount>
+  </cac:LegalMonetaryTotal>
+  <cac:CreditNoteLine>
+    <cbc:ID>1</cbc:ID>
+    <cbc:CreditedQuantity unitCode="94">0.5</cbc:CreditedQuantity>
+    <cbc:LineExtensionAmount currencyID="COP">10000.00</cbc:LineExtensionAmount>
+    <cac:Item><cbc:Description>Descuento cuaderno argollado</cbc:Description></cac:Item>
+    <cac:Price><cbc:PriceAmount currencyID="COP">20000.00</cbc:PriceAmount></cac:Price>
+  </cac:CreditNoteLine>
+</CreditNote>

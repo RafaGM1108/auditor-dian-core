@@ -1,0 +1,24 @@
+# Entorno
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.coverage
+dist/
+
+# Datos reales: nunca al repositorio (SPEC §11).
+# Los ZIP de prueba se arman en las pruebas desde XML sintéticos, por eso no hay excepción para *.zip.
+data/
+*.duckdb
+*.duckdb.wal
+*.zip
+.env
+
+# Grafo: rutas absolutas propias de cada máquina
+graphify-out/.graphify_python
+graphify-out/.graphify_root
+graphify-out/.graphify_build_state.json
+graphify-out/.graphify_labels.pending.json
+graphify-out/.graphify_labels.json.sig
+graphify-out/20*/

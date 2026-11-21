@@ -1,0 +1,260 @@
+% Informe final de Auditor DIAN, formato IEEE a doble columna.
+% Compilar: latexmk -pdf informe.tex   (requiere IEEEtran: paquete texlive-publishers)
+% Borrador iniciado el 2026-11-20. Lo marcado con \pendiente espera datos de uso reales.
+% Fuera de este informe, por regla: el código de pro, el detalle de sus reglas y datos de clientes.
+\documentclass[conference,a4paper]{IEEEtran}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands,es-tabla]{babel}
+\usepackage[autostyle]{csquotes}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric,calc}
+\usepackage[style=ieee,backend=biber,urldate=iso,seconds=true]{biblatex}
+\addbibresource{referencias.bib}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue}
+
+\newcommand{\pendiente}[1]{\textcolor{red!70!black}{\textbf{Pendiente:} #1}}
+\newcommand{\cod}[1]{\texttt{\small #1}}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+
+\begin{document}
+
+\title{Auditor DIAN: consulta en lenguaje natural de las facturas electrónicas recibidas, con cifras exactas y trazables}
+
+% Completar con los nombres y la afiliación de los autores.
+\author{\IEEEauthorblockN{Autores por definir}
+\IEEEauthorblockA{Borrador del \today}}
+
+\maketitle
+
+\begin{abstract}
+En Colombia se emiten más de 2.300 millones de facturas electrónicas al año y cada una llega al comprador como un ZIP con un XML firmado. Auditor DIAN convierte esos ZIP en una base de datos local, una por cliente, que un asistente de IA (Claude) consulta mediante el Model Context Protocol (MCP). El contador pregunta en lenguaje natural y recibe la cifra exacta con la lista de facturas (CUFE) que la respaldan; la cifra la calcula SQL, nunca el modelo. El sistema tiene una parte abierta (\emph{core}: lectura, seis informes, Excel y servidor MCP) y un complemento de pago (\emph{pro}: exógena, certificados y un borrador del formulario 210 de renta de persona natural). Con datos reales, 57 facturas de 20 emisores se leen sin errores y 53 coinciden exacto con el PDF del emisor; el borrador de renta coincide casilla por casilla con 15 declaraciones públicas del año gravable 2025.
+\end{abstract}
+
+\begin{IEEEkeywords}
+facturación electrónica, DIAN, UBL 2.1, Model Context Protocol, agentes de IA, auditoría tributaria, DuckDB.
+\end{IEEEkeywords}
+
+% ---------------------------------------------------------------------------
+\section{Problema}
+
+La facturación electrónica en Colombia mueve volúmenes que no se revisan a mano. En 2023 se emitieron 2.326,8 millones de facturas, frente a 819,7 millones en 2020 \cite{actualicese2024}: más de 6 millones al día. Hay cerca de 1,16 millones de facturadores habilitados \cite{dian021} y 334.685 contadores públicos activos \cite{incp2025}. Si las facturas se repartieran parejo serían unas 7.000 por contador al año; es un cálculo ilustrativo.
+
+El contador recibe los ZIP de decenas de clientes y debe responder preguntas que exigen abrirlos uno por uno: cuánto IVA descontable hay en el bimestre, qué facturas son a crédito, cuáles están duplicadas o anuladas con nota crédito y qué compras sirven para la deducción del 1\,\% en renta. Esta última muestra el tamaño del problema: en 2023, de 1.672 millones de facturas a personas naturales, solo el 19,7\,\% servía para esa deducción, porque el resto no informaba un medio de pago electrónico \cite{dian021}.
+
+% ---------------------------------------------------------------------------
+\section{Investigación de necesidad}
+
+\paragraph*{Normas} La DIAN eliminó los portales de descarga. El ZIP con un \cod{AttachedDocument} que llega al correo de recepción es el insumo que todo comprador tiene por ley \cite{res165,res227,dianRecepcion}, y es lo que lee el sistema.
+
+\paragraph*{Herramientas existentes} Las alternativas dependen del token DIAN de cada contribuyente o de un software contable concreto \cite{consultorContable,siigo2026}; entregan datos y no hallazgos (un Excel de 65 columnas sigue exigiendo buscar a mano duplicados o anulaciones), y procesan en la nube. La competencia más cercana es el MCP de solo lectura de Alegra \cite{alegra2026}, que responde sobre la contabilidad ya causada, no sobre lo que llegó al correo. Otras extensiones consultan el portal DIAN para eventos RADIAN \cite{accounter}.
+
+\paragraph*{Diferencia} Auditor DIAN parte del XML recibido, no depende del software contable, funciona en el equipo del contador y entrega hallazgos ya calculados con su soporte.
+
+\pendiente{señales de uso tras compartirlo con 2 o 3 contadores de prueba, recogidas con los formularios de reporte y la herramienta de diagnóstico, que no expone montos ni contenido de facturas.}
+
+% ---------------------------------------------------------------------------
+\section{Arquitectura}
+
+La Fig.~\ref{fig:arquitectura} resume el flujo. El servidor MCP \cite{mcp} corre en el equipo del contador y Claude Desktop lo lanza; no hay servidor en internet ni llamadas de red en \emph{core}. Las facturas no salen del equipo: Claude solo ve lo que cada herramienta responde en la conversación.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  caja/.style={draw, rounded corners=2pt, align=center, font=\scriptsize, minimum width=2.9cm, minimum height=0.8cm},
+  base/.style={draw, cylinder, shape border rotate=90, aspect=0.15, align=center, font=\scriptsize, minimum width=2.9cm, minimum height=1cm},
+  flecha/.style={-{Stealth[length=4pt]}, thin},
+  nota/.style={font=\tiny\itshape, align=center},
+  node distance=0.55cm and 0.4cm]
+  \node[caja] (correo) {Correo de recepción\\ZIP: XML + PDF};
+  \node[caja, right=of correo] (renta) {Exógena, certificados\\220 y bancarios};
+  \node[caja, below=of correo] (parser) {\emph{core}: lector XML\\(\texttt{Decimal})};
+  \node[caja, below=of renta] (lectores) {\emph{pro}: lectores};
+  \node[base, below=1.1cm of $(parser)!0.5!(lectores)$] (db) {Base DuckDB\\una por cliente};
+  \node[caja, below=of db] (informes) {Informes SQL (\emph{core})\\Cruces y borrador 210 (\emph{pro})};
+  \node[caja, below=of informes] (mcp) {Servidor MCP local\\(extensión \texttt{.mcpb})};
+  \node[caja, below=of mcp] (claude) {Claude Desktop\\el contador pregunta};
+  \draw[flecha] (correo) -- (parser);
+  \draw[flecha] (renta) -- (lectores);
+  \draw[flecha] (parser) -- node[nota, left, pos=0.45] {filtro: comprador\\o vendedor} (db);
+  \draw[flecha] (lectores) -- node[nota, right, pos=0.45] {filtro:\\titular} (db);
+  \draw[flecha] (db) -- (informes);
+  \draw[flecha] (informes) -- (mcp);
+  \draw[flecha, <->] (mcp) -- (claude);
+\end{tikzpicture}
+\caption{Flujo de datos. Cada documento entra solo a la base del cliente que figura en él.}
+\label{fig:arquitectura}
+\end{figure}
+
+Las decisiones de forma son cuatro:
+\begin{itemize}
+  \item \textbf{El modelo no calcula.} Toda cifra sale de SQL o de código probado y viaja como texto decimal exacto; las instrucciones le piden a Claude citarla sin sumarla ni redondearla.
+  \item \textbf{Una base por cliente}, en DuckDB. Los montos se guardan exactos como vienen en el XML (hasta 6 decimales en montos y 3 en tarifas) y se redondean solo al presentar.
+  \item \textbf{Solo agregar.} La carga es idempotente: un archivo ya visto se salta por su SHA-256 y un documento ya guardado se reconoce por su CUFE. Nada se borra ni se modifica desde Claude.
+  \item \textbf{Plugins.} \emph{pro} se instala aparte y se registra por un punto de entrada. \emph{core} nunca importa nada de \emph{pro} y funciona igual si \emph{pro} se desinstala.
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\section{Decisiones clave}
+
+La Tabla~\ref{tab:decisiones} resume las decisiones documentadas en cada repositorio (11 en \emph{core}, 19 en \emph{pro}).
+
+\begin{table}[t]
+\caption{Decisiones de diseño}
+\label{tab:decisiones}
+\footnotesize
+\begin{tabularx}{\columnwidth}{@{}p{1.6cm}LL@{}}
+\toprule
+Tema & Decisión & Por qué \\
+\midrule
+Números & Guardar exacto; nunca \cod{float} & Un centavo perdido no se puede rastrear \\
+Informes & SQL puro: detalle por documento con su CUFE y resumen & Cada total se desglosa hasta sus documentos \\
+Carga & Desde Claude, solo agregando & El contador no usa la terminal; el agente no debe poder perder datos \\
+Usuario no técnico & Carpetas por nombre; NIT en cualquier formato & El contador no sabe de rutas; el DV se infiere por la cantidad de dígitos \\
+Aislamiento & Seis filtros con la identificación de cada documento & Un dato ajeno en una declaración es el error más grave \\
+Licencia & \emph{core} MIT; \emph{pro} propietario & Lo común, abierto; el borrador de renta, de pago \\
+Reglas (\emph{pro}) & Versionadas por año gravable, con norma y enlace oficial & Cambiar de año es cambiar datos, no código \\
+Borrador (\emph{pro}) & Cada casilla con valor, estado y fuente & Nunca da un valor cuando falta información \\
+RADIAN & Fuera de alcance & El portal no permite descargar los eventos \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+El aislamiento entre clientes merece una nota. Si un contador carga en un cliente las facturas de otro, la declaración sale con información ajena. Un \emph{hash} no dice de quién es un documento; lo dice la identificación que trae adentro. Por eso hay seis filtros independientes: al cargar en \emph{core} (el cliente debe ser comprador o vendedor), al cargar en \emph{pro} (el titular del certificado debe ser el cliente), al abrir la base (debe pertenecer a la carpeta del cliente), al leer en \emph{core} y en \emph{pro} (solo cuentan documentos del cliente) y al repartir por cliente (se compara la identificación exacta del XML).
+
+% ---------------------------------------------------------------------------
+\section{Lo técnico de la DIAN}
+
+\paragraph*{Cómo se lee un \cod{AttachedDocument}} El ZIP trae un XML contenedor. La factura viene embebida como texto (CDATA) en \nolinkurl{cac:Attachment/cac:ExternalReference/cbc:Description}, campos AE33--AE37 del Anexo Técnico FE 1.9 \cite{anexoFE19}. La respuesta de validación viene en \nolinkurl{cac:ParentDocumentLineReference}, que puede repetirse (AE38, 1..N): hay que usar la respuesta cuyo CUFE coincide con el documento. El código \cod{02} significa validado y \cod{04}, rechazado.
+
+\paragraph*{Trampas encontradas}
+\begin{itemize}
+  \item En la versión 1.9 las tablas de códigos salieron del anexo y pasaron a la ``Caja de Herramientas'' en Excel; el mismo ZIP trae listas de una versión anterior que no deben usarse.
+  \item Las retenciones del XML son autorretenciones del emisor (FAT01, y DSAT01 en el documento soporte \cite{anexoDS11}), no la retención que practica el comprador.
+  \item Desde la versión 1.8 los anticipos son informativos y no se restan del total, pero los ejemplos oficiales de 2019 sí los restan.
+  \item El anexo se contradice sobre la moneda; \cod{SourceCurrencyCode} es la del documento.
+  \item El PDF no siempre muestra lo mismo que el XML: hay emisores que redondean, y un correo anunciaba 40.122,06 cuando el XML decía 40.122,30. El documento legal es el XML.
+  \item La fecha de vencimiento no indica crédito: una droguería la pone a 60 días en ventas de contado. Solo la forma de pago \cod{2} decide.
+  \item El nombre del emisor varía (``ÉXITO''/``EXITO''): se agrupa por NIT.
+  \item Un emisor escribe los montos en formato inglés con 3 decimales.
+  \item El consumidor final se identifica como \cod{222222222222} y no pertenece a ningún cliente.
+  \item El anexo escribe \cod{PrePaidAmount} donde UBL 2.1 y los XML reales usan \cod{PrepaidAmount}.
+\end{itemize}
+
+\paragraph*{Del lado de Claude} La API solo acepta nombres de herramientas y parámetros en ASCII (\cod{anio}, no \cod{año}), y Claude Desktop descarta en silencio las que no cumplen. Un error dentro de una herramienta llega al agente sin motivo si no se lanza como \cod{ToolError}.
+
+% ---------------------------------------------------------------------------
+\section{Resultados}
+
+La Tabla~\ref{tab:hitos} muestra el avance por hito. Todas las pruebas usan valores esperados escritos a mano, y la cobertura de líneas se mantuvo en 100\,\%.
+
+\begin{table}[t]
+\caption{Pruebas al cierre de cada hito}
+\label{tab:hitos}
+\footnotesize
+\begin{tabularx}{\columnwidth}{@{}p{2.1cm}Lr@{}}
+\toprule
+Hito & Entrega & Pruebas \\
+\midrule
+M1 Lector & 7 tipos de documento y validación DIAN & 31 \\
+M2 Base y CLI & Reingerir no duplica nada & 59 \\
+M3 Informes & 6 informes y Excel & 80 \\
+M4 MCP & Un agente responde el IVA con sus CUFE & 92 \\
+M5 Plugins & \emph{core} v0.1 & 98 \\
+\emph{core} v0.4.0 & Carga desde Claude y aislamiento & 142 \\
+\emph{pro} P1--P4 & Reglas, lectores, cruces y borrador 210 & 232 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph*{Facturas reales} 57 documentos de 20 emisores, de 2020 a 2026, se leen sin errores. Contra el PDF que el emisor incluye en el mismo ZIP, una fuente independiente del lector, 53 coinciden exacto, 3 difieren solo por redondeo del PDF y 1 PDF es una imagen sin texto.
+
+\paragraph*{Borrador de renta} Cotejado con 15 declaraciones reales del año gravable 2025, públicas por la Ley 2013 de 2019 \cite{ley2013}, de 114 casillas cada una: todas coinciden. Cubre rentas de trabajo, honorarios, capital, no laborales, pensiones, dividendos, ganancias ocasionales y el límite del 40\,\%. El cotejo reveló dos reglas que el instructivo no dice: el patrimonio líquido va en cero si las deudas lo superan, y el impuesto de las tablas en UVT se trunca a dos decimales antes de pasarlo a pesos.
+
+\paragraph*{Exógena} En 2 reportes reales (24 y 41 registros) un saldo bancario coincide con su certificado, y en un cliente la DIAN reporta más compras que las facturas cargadas.
+
+\paragraph*{Instalación como la haría un contador} El paquete \cod{.mcpb} final, probado con una carpeta de Descargas realista (facturas mezcladas, PDF, ZIP dañados y copias repetidas), pasa las 23 verificaciones de punta a punta: cada factura va a su cliente, repetir la carga no duplica nada y, si se carga todo en un solo cliente, no entra nada ajeno. Esa verificación encontró tres fallas que las pruebas unitarias no veían, ya corregidas: las facturas a consumidor final se ofrecían como cliente por crear, una exportación se habría asignado a un cliente inexistente y la clave de un PDF bancario fallaba con el NIT escrito con puntos.
+
+\pendiente{diferencias renglón por renglón contra declaraciones de los contadores de prueba, si las comparten.}
+
+% ---------------------------------------------------------------------------
+\section{Limitaciones y riesgos}
+
+\begin{itemize}
+  \item \textbf{Es un borrador, no una declaración.} El contador revisa, presenta y firma. Las reglas de \emph{pro} aún no las revisa un contador externo, requisito antes de venderlo.
+  \item \textbf{Poca variedad real.} Casi todas las facturas reales son tipo \cod{01}; notas débito, documento soporte, moneda extranjera y retenciones están probados con ejemplos oficiales y datos sintéticos.
+  \item \textbf{Certificados bancarios.} Faltan lectores de varios bancos por falta de muestras.
+  \item \textbf{No lee} eventos RADIAN, PDF escaneados ni ZIP dentro de ZIP, y no se conecta a la DIAN.
+  \item \textbf{Identificaciones ambiguas.} Una cédula corta con el dígito de verificación pegado no se distingue de una más larga; se advierte y se pide confirmación.
+  \item \textbf{Responde Claude.} Las cifras son exactas, pero la redacción es del modelo; cada respuesta lleva el aviso ``Requiere revisión del contador''.
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\section{Modelo de negocio}
+
+\begin{table}[t]
+\caption{Planes}
+\label{tab:planes}
+\footnotesize
+\begin{tabularx}{\columnwidth}{@{}p{1.4cm}L@{}}
+\toprule
+Plan & Incluye \\
+\midrule
+Free & \emph{core} (MIT): lectura, informes, Excel y consulta desde Claude \\
+Pro & Documentos de renta, cruces con la exógena y borrador del formulario 210 \\
+Team & Varios usuarios, roles e historial de revisión \\
+Empresas & Persona jurídica: contabilidad, conciliación fiscal y su formulario \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La Tabla~\ref{tab:planes} resume los planes previstos. \pendiente{precios, canal de venta y lo que digan los contadores de prueba sobre qué pagarían.}
+
+% ---------------------------------------------------------------------------
+\section{Cronograma real frente al planeado}
+
+\begin{table}[t]
+\caption{Cronograma}
+\label{tab:cronograma}
+\footnotesize
+\begin{tabularx}{\columnwidth}{@{}p{2.3cm}p{2.1cm}L@{}}
+\toprule
+Fase & Planeado & Real \\
+\midrule
+0 Investigación & 30 nov--13 dic 2026 & Escrita el 20 nov 2026 \\
+M1--M5 (\emph{core}) & 14 dic 2026--28 feb 2027 & Cerrados el 20 nov 2026 \\
+P1--P2 Reglas y lectores & mar 2027 & P1 cerrado; P2 abierto (faltan muestras) \\
+P3--P4 Cruces y borrador & mar 2027--temporada & Cerrados el 20 nov 2026 \\
+8 Casos reales & abr--may 2027 & Adelantada: 15 declaraciones públicas \\
+9 Publicación & may--jun 2027 & En curso: \emph{core} v0.4.0 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\pendiente{explicar el adelanto frente al plan (Tabla~\ref{tab:cronograma}) y cerrar la tabla con las fechas de publicación.}
+
+% ---------------------------------------------------------------------------
+\section{Próximos pasos}
+
+\begin{enumerate}
+  \item Compartir el paquete con 2 o 3 contadores de prueba y recoger sus reportes.
+  \item Grabar una demostración del sistema funcionando y publicar \emph{core}.
+  \item Conseguir muestras de certificados bancarios y de dividendos.
+  \item Hacer revisar las reglas de \emph{pro} por un contador.
+  \item Seguir el proyecto de ley 477 de 2026 y un eventual formulario 210 nuevo.
+\end{enumerate}
+
+% ---------------------------------------------------------------------------
+\section{Conclusiones}
+
+Separar el cálculo del lenguaje funciona: el modelo entiende la pregunta y redacta, pero las cifras salen de SQL con su soporte, y por eso se pueden verificar contra fuentes independientes (el PDF del emisor y declaraciones presentadas). La mayor parte del trabajo no estuvo en la IA sino en leer bien los documentos de la DIAN y en proteger al usuario no técnico de sus propios errores, como cargar las facturas de un cliente en otro. \pendiente{conclusiones sobre el uso real.}
+
+\printbibliography
+
+\end{document}

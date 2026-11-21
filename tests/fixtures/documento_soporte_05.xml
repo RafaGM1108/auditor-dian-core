@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Fixture sintético: documento soporte por compra a una persona natural no obligada a facturar. -->
+<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
+         xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+         xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+  <cbc:UBLVersionID>UBL 2.1</cbc:UBLVersionID>
+  <cbc:ID>DS20</cbc:ID>
+  <cbc:UUID schemeID="1" schemeName="CUDS-SHA384">cuds0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005</cbc:UUID>
+  <cbc:IssueDate>2026-01-28</cbc:IssueDate>
+  <cbc:IssueTime>14:00:00-05:00</cbc:IssueTime>
+  <cbc:InvoiceTypeCode>05</cbc:InvoiceTypeCode>
+  <cbc:DocumentCurrencyCode>COP</cbc:DocumentCurrencyCode>
+  <cac:AccountingSupplierParty>
+    <cac:Party>
+      <cac:PartyTaxScheme>
+        <cbc:RegistrationName>VENDEDOR PERSONA NATURAL</cbc:RegistrationName>
+        <cbc:CompanyID schemeAgencyID="195" schemeName="13">1000000001</cbc:CompanyID>
+      </cac:PartyTaxScheme>
+    </cac:Party>
+  </cac:AccountingSupplierParty>
+  <cac:AccountingCustomerParty>
+    <cac:Party>
+      <cac:PartyTaxScheme>
+        <cbc:RegistrationName>CLIENTE DE PRUEBA SAS</cbc:RegistrationName>
+        <cbc:CompanyID schemeAgencyID="195" schemeID="9" schemeName="31">900000009</cbc:CompanyID>
+      </cac:PartyTaxScheme>
+    </cac:Party>
+  </cac:AccountingCustomerParty>
+  <cac:PaymentMeans><cbc:ID>1</cbc:ID></cac:PaymentMeans>
+  <cac:WithholdingTaxTotal>
+    <cbc:TaxAmount currencyID="COP">17500.00</cbc:TaxAmount>
+    <cac:TaxSubtotal>
+      <cbc:TaxableAmount currencyID="COP">500000.00</cbc:TaxableAmount>
+      <cbc:TaxAmount currencyID="COP">17500.00</cbc:TaxAmount>
+      <cac:TaxCategory>
+        <cbc:Percent>3.50</cbc:Percent>
+        <cac:TaxScheme><cbc:ID>06</cbc:ID><cbc:Name>ReteRenta</cbc:Name></cac:TaxScheme>
+      </cac:TaxCategory>
+    </cac:TaxSubtotal>
+  </cac:WithholdingTaxTotal>
+  <cac:WithholdingTaxTotal>
+    <cbc:TaxAmount currencyID="COP">4830.00</cbc:TaxAmount>
+    <cac:TaxSubtotal>
+      <cbc:TaxableAmount currencyID="COP">500000.00</cbc:TaxableAmount>
+      <cbc:TaxAmount currencyID="COP">4830.00</cbc:TaxAmount>
+      <cac:TaxCategory>
+        <cbc:Percent>0.966</cbc:Percent>
+        <cac:TaxScheme><cbc:ID>07</cbc:ID><cbc:Name>ReteICA</cbc:Name></cac:TaxScheme>
+      </cac:TaxCategory>
+    </cac:TaxSubtotal>
+  </cac:WithholdingTaxTotal>
+  <cac:LegalMonetaryTotal>
+    <cbc:LineExtensionAmount currencyID="COP">500000.00</cbc:LineExtensionAmount>
+    <cbc:TaxExclusiveAmount currencyID="COP">0.00</cbc:TaxExclusiveAmount>
+    <cbc:PayableAmount currencyID="COP">500000.00</cbc:PayableAmount>
+  </cac:LegalMonetaryTotal>
+  <cac:InvoiceLine>
+    <cbc:ID>1</cbc:ID>
+    <cbc:InvoicedQuantity unitCode="94">1</cbc:InvoicedQuantity>
+    <cbc:LineExtensionAmount currencyID="COP">500000.00</cbc:LineExtensionAmount>
+    <cac:Item><cbc:Description>Servicio de transporte</cbc:Description></cac:Item>
+    <cac:Price><cbc:PriceAmount currencyID="COP">500000.00</cbc:PriceAmount></cac:Price>
+  </cac:InvoiceLine>
+</Invoice>

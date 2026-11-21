@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Fixture sintético: nota de ajuste al documento soporte DS20. -->
+<CreditNote xmlns="urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2"
+            xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+            xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+  <cbc:UBLVersionID>UBL 2.1</cbc:UBLVersionID>
+  <cbc:ID>NA3</cbc:ID>
+  <cbc:UUID schemeID="1" schemeName="CUDS-SHA384">cuds0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000095</cbc:UUID>
+  <cbc:IssueDate>2026-02-02</cbc:IssueDate>
+  <cbc:IssueTime>11:20:00-05:00</cbc:IssueTime>
+  <cbc:CreditNoteTypeCode>95</cbc:CreditNoteTypeCode>
+  <cbc:DocumentCurrencyCode>COP</cbc:DocumentCurrencyCode>
+  <cac:BillingReference>
+    <cac:InvoiceDocumentReference>
+      <cbc:ID>DS20</cbc:ID>
+      <cbc:UUID schemeName="CUDS-SHA384">cuds0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005</cbc:UUID>
+      <cbc:IssueDate>2026-01-28</cbc:IssueDate>
+    </cac:InvoiceDocumentReference>
+  </cac:BillingReference>
+  <cac:AccountingSupplierParty>
+    <cac:Party>
+      <cac:PartyTaxScheme>
+        <cbc:RegistrationName>VENDEDOR PERSONA NATURAL</cbc:RegistrationName>
+        <cbc:CompanyID schemeAgencyID="195" schemeName="13">1000000001</cbc:CompanyID>
+      </cac:PartyTaxScheme>
+    </cac:Party>
+  </cac:AccountingSupplierParty>
+  <cac:AccountingCustomerParty>
+    <cac:Party>
+      <cac:PartyTaxScheme>
+        <cbc:RegistrationName>CLIENTE DE PRUEBA SAS</cbc:RegistrationName>
+        <cbc:CompanyID schemeAgencyID="195" schemeID="9" schemeName="31">900000009</cbc:CompanyID>
+      </cac:PartyTaxScheme>
+    </cac:Party>
+  </cac:AccountingCustomerParty>
+  <cac:LegalMonetaryTotal>
+    <cbc:LineExtensionAmount currencyID="COP">100000.00</cbc:LineExtensionAmount>
+    <cbc:TaxExclusiveAmount currencyID="COP">0.00</cbc:TaxExclusiveAmount>
+    <cbc:PayableAmount currencyID="COP">100000.00</cbc:PayableAmount>
+  </cac:LegalMonetaryTotal>
+  <cac:CreditNoteLine>
+    <cbc:ID>1</cbc:ID>
+    <cbc:CreditedQuantity unitCode="94">1</cbc:CreditedQuantity>
+    <cbc:LineExtensionAmount currencyID="COP">100000.00</cbc:LineExtensionAmount>
+    <cac:Item><cbc:Description>Ajuste por menor valor del transporte</cbc:Description></cac:Item>
+    <cac:Price><cbc:PriceAmount currencyID="COP">100000.00</cbc:PriceAmount></cac:Price>
+  </cac:CreditNoteLine>
+</CreditNote>
