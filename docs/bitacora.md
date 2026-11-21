@@ -11,6 +11,17 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha, qué se hizo, 
 
 
 
+
+## 2026-11-20 — README profesional y política de seguridad
+
+**Qué se hizo**
+- README rehecho para que quien llega al repositorio entienda en segundos qué es y por qué es seguro: insignias reales (pruebas, cobertura, versión, Python, licencia), GIF, una tabla de garantías de seguridad y cómo se cumple cada una, qué ve Claude, instalación, preguntas de ejemplo, las 11 herramientas con su efecto y un diagrama del flujo.
+- `SECURITY.md`: cómo reportar una vulnerabilidad en privado, qué cuenta como vulnerabilidad y el modelo de seguridad, incluido lo que no cubre (las bases no van cifradas).
+- La CI ahora prueba Python 3.11, 3.12 y 3.13 y exige el 100 % de cobertura, para que las insignias digan la verdad.
+
+**Qué se aprendió**
+- Cada afirmación del README se verificó contra el código. "Seis filtros" era cierto para `core` más `pro`, pero en este repositorio son cuatro.
+
 ## 2026-11-20 — Release 0.4.1 y el informe sin cronograma
 
 **Qué se hizo**

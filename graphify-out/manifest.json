@@ -1,9 +1,9 @@
 {
   ".github/workflows/ci.yml": {
-    "mtime": 1795150696.0925398,
-    "seen": 1795151470.7181158,
-    "ast_hash": "2bad8cf84393c59397252c265ad545cb",
-    "semantic_hash": "2bad8cf84393c59397252c265ad545cb"
+    "mtime": 1795225785.7723105,
+    "seen": 1795225837.08648,
+    "ast_hash": "dff7041ca6a422241c7d2598329f8736",
+    "semantic_hash": ""
   },
   "pyproject.toml": {
     "mtime": 1795225067.9983816,
@@ -54,9 +54,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1795225324.875617,
-    "seen": 1795225346.9313521,
-    "ast_hash": "8f5efc586fb8922fa5dcf3985979e1a1",
+    "mtime": 1795225778.345239,
+    "seen": 1795225837.0875316,
+    "ast_hash": "60a31db7abdb0c473f8d15a0df1d94d6",
     "semantic_hash": ""
   },
   "SPEC.md": {
@@ -66,9 +66,9 @@
     "semantic_hash": ""
   },
   "docs/bitacora.md": {
-    "mtime": 1795225346.2991593,
-    "seen": 1795225346.9313958,
-    "ast_hash": "e14e0a0a204261a8dae167e00997d852",
+    "mtime": 1795225835.1583133,
+    "seen": 1795225837.0875742,
+    "ast_hash": "d3f7f5e5dae945751bd4e8c10dc306db",
     "semantic_hash": ""
   },
   "docs/cronograma.md": {
@@ -399,6 +399,12 @@
     "mtime": 1795225154.6982186,
     "seen": 1795225156.3260138,
     "ast_hash": "e1b28e3ce395319ab8ca8a22d85206cd",
+    "semantic_hash": ""
+  },
+  "SECURITY.md": {
+    "mtime": 1795225778.615143,
+    "seen": 1795225837.0875337,
+    "ast_hash": "d409c33d604a1770a71a2115c721397b",
     "semantic_hash": ""
   }
 }

@@ -7,9 +7,15 @@ on:
 jobs:
   pruebas:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python }}
       - run: uv sync --locked
       - run: uv run ruff check .
-      - run: uv run pytest
+      # La cobertura del 100 % que anuncia el README se exige aquí.
+      - run: uv run pytest --cov=auditor_dian --cov-fail-under=100
