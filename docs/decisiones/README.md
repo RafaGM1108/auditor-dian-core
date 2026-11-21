@@ -17,3 +17,4 @@ Una decisión no se edita después de tomada: si cambia, se escribe una nota nue
 | [0009](0009-licencia-y-nombre.md) | Licencia MIT y nombre público | 2026-11-20 |
 | [0010](0010-carga-desde-claude.md) | Carga de facturas desde Claude | 2026-11-20 |
 | [0011](0011-filtros-entre-clientes.md) | La información de un cliente nunca termina en otro | 2026-11-20 |
+| [0012](0012-publicacion-con-historial-aparte.md) | Publicación en un repositorio nuevo, con el historial aparte | 2026-11-20 |

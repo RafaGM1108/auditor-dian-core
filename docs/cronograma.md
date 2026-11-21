@@ -17,7 +17,7 @@
 | 6 | 1 mar – 28 mar 2027 | P1–P2 Reglas y lectores | pro | Reglas versionadas; lectores de certificado de ingresos, bancarios y exógena | Fixtures por plantilla pasan |
 | 7 | 29 mar – 25 abr 2027 | P3–P4 Cruces y borrador | pro | Cruce con exógena, documentos faltantes, borrador de renta persona natural | Mapeo de renglones con norma citada para cada uno |
 | 8 | 26 abr – 23 may 2027 | Prueba con casos reales | ambos | Borrador comparado contra declaraciones ya presentadas (propias o de conocidos, anonimizadas) | Diferencias documentadas renglón por renglón |
-| 9 | 24 may – 6 jun 2027 | Ajustes, publicación e informe | ambos | `core` público con licencia, README y demo; informe final publicado | Repositorio público y informe en línea — **borrador del informe iniciado el 2026-11-20** ([informe](informe/informe.tex)) |
+| 9 | 24 may – 6 jun 2027 | Ajustes, publicación e informe | ambos | `core` público con licencia, README y demo; informe final publicado | Repositorio público y informe en línea — **`core` público desde el 2026-11-20** (v0.4.1, [decisión 0012](decisiones/0012-publicacion-con-historial-aparte.md)); borrador del informe iniciado ([informe](informe/informe.tex)) |
 
 Por qué así: la prueba termina antes de la temporada de declaraciones de renta de personas naturales (verificar las fechas en el calendario tributario del año), que es cuando los contadores más necesitan la herramienta.
 

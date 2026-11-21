@@ -6,9 +6,9 @@
     "semantic_hash": "2bad8cf84393c59397252c265ad545cb"
   },
   "pyproject.toml": {
-    "mtime": 1795224341.4272845,
-    "seen": 1795224438.6745665,
-    "ast_hash": "ce43c449eeb440e57ad2e283162e8dc2",
+    "mtime": 1795225067.9983816,
+    "seen": 1795225156.3239725,
+    "ast_hash": "972741dc7e44fce121c0c2acedc30f25",
     "semantic_hash": ""
   },
   "src/auditor_dian/__init__.py": {
@@ -66,15 +66,15 @@
     "semantic_hash": ""
   },
   "docs/bitacora.md": {
-    "mtime": 1795224425.2633903,
-    "seen": 1795224438.6754155,
-    "ast_hash": "e598032544fc704d0faaa9d373af34f8",
+    "mtime": 1795225154.7320638,
+    "seen": 1795225156.3254302,
+    "ast_hash": "efd245da576ade19f41c6be137e04e4d",
     "semantic_hash": ""
   },
   "docs/cronograma.md": {
-    "mtime": 1795221771.2282283,
-    "seen": 1795224241.9782813,
-    "ast_hash": "10d6ceae9320be81ff408d8ad4da8964",
+    "mtime": 1795225154.7314336,
+    "seen": 1795225156.325432,
+    "ast_hash": "9190dfe357220c79079d85cc2750af3c",
     "semantic_hash": ""
   },
   "docs/decisiones/0001-estructura-del-proyecto.md": {
@@ -84,9 +84,9 @@
     "semantic_hash": "1492ee7d3650c7d58275aa2271509cca"
   },
   "docs/decisiones/README.md": {
-    "mtime": 1795218877.2808867,
-    "seen": 1795219112.9505348,
-    "ast_hash": "7119ad1a607a0cfabe086f742d449490",
+    "mtime": 1795225154.7311816,
+    "seen": 1795225156.3260186,
+    "ast_hash": "6d8e0aa96f454d037cb8898cdca1d15d",
     "semantic_hash": ""
   },
   "docs/hitos/README.md": {
@@ -393,6 +393,12 @@
     "mtime": 1795224224.2472367,
     "seen": 1795224241.978967,
     "ast_hash": "abe58694a1ef74a9fc55e4901598f2c2",
+    "semantic_hash": ""
+  },
+  "docs/decisiones/0012-publicacion-con-historial-aparte.md": {
+    "mtime": 1795225154.6982186,
+    "seen": 1795225156.3260138,
+    "ast_hash": "e1b28e3ce395319ab8ca8a22d85206cd",
     "semantic_hash": ""
   }
 }

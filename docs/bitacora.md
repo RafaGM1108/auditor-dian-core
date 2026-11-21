@@ -9,6 +9,18 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha, qué se hizo, 
 
 
 
+
+## 2026-11-20 — `core` es público
+
+**Qué se hizo**
+- Revisión previa a la publicación: historial completo, archivos, paquete `.mcpb` y caché del grafo. Se buscaron datos de facturas, claves, rutas personales, identificaciones y nombres reales.
+- Se quitaron dos cédulas reales y el nombre de una persona de los archivos (código, prueba y bitácora); el paquete 0.4.1 se reconstruyó sin ellos.
+- `core` se publicó en un repositorio nuevo con un único commit y el correo anónimo de GitHub; el historial completo queda privado en `auditor-dian-core-historial` (decisión [0012](decisiones/0012-publicacion-con-historial-aparte.md)).
+- Comprobado sin iniciar sesión: el repositorio se clona, instala y pasa las 142 pruebas, y el GIF del README carga.
+
+**Qué se aprendió**
+- Los datos reales se cuelan por los ejemplos: una cédula real servía como caso límite en una prueba y en un comentario. Revisar contra las identificaciones y nombres de las bases reales, no solo buscar "datos", fue lo que los encontró.
+
 ## 2026-11-20 — v0.4.1
 
 **Qué se hizo**
