@@ -47,6 +47,7 @@ AVISO = "Cifras calculadas a partir de los documentos cargados. Requiere revisi�
 MAX_FILAS = 200
 LECTURA = ToolAnnotations(readOnlyHint=True, openWorldHint=False)
 AGREGA = ToolAnnotations(readOnlyHint=False, destructiveHint=False, openWorldHint=False)
+AGREGA_REPETIBLE = AGREGA.model_copy(update={"idempotent_hint": True})
 EXTENSIONES = {".zip", ".xml"}
 # Comprador genérico cuando no se identifica (Anexo Técnico FE 1.9, Res. DIAN 000165 de 2023,
 # campos FAK21 y CAK62: "consumidor final ... documento 222222222222").
@@ -425,7 +426,7 @@ def exportar_informe(
     return {"aviso": AVISO, "ruta": str(destino)}
 
 
-@herramienta("Registrar cliente", AGREGA)
+@herramienta("Registrar cliente", AGREGA_REPETIBLE)
 def crear_cliente(
     cliente: Cliente,
     nombre: Annotated[str, Field(description="Nombre o razón social del cliente.")],
@@ -474,7 +475,7 @@ def crear_cliente(
     return r
 
 
-@herramienta("Cargar facturas de un cliente", AGREGA)
+@herramienta("Cargar facturas de un cliente", AGREGA_REPETIBLE)
 def ingerir_facturas(
     cliente: Cliente,
     ruta: Annotated[
@@ -511,7 +512,7 @@ def ingerir_facturas(
     return {"aviso": AVISO, **_resumen(r), "nota": " ".join(notas)}
 
 
-@herramienta("Cargar facturas y repartir por cliente", AGREGA)
+@herramienta("Cargar facturas y repartir por cliente", AGREGA_REPETIBLE)
 def ingerir_por_cliente(
     ruta: Annotated[
         str | None,
