@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
@@ -106,11 +107,56 @@ def informe(
 
 
 @app.command()
-def mcp() -> None:
-    """Inicia el servidor MCP por stdio (solo lectura) para un agente como Claude."""
-    from auditor_dian.servidor import servidor  # el SDK de MCP solo se carga para este comando
+def mcp(
+    http: Annotated[
+        bool,
+        typer.Option(
+            "--http",
+            help="Por HTTP en 127.0.0.1, para exponerlo con un túnel a claude.ai (decisión 0014).",
+        ),
+    ] = False,
+    puerto: Annotated[int, typer.Option(help="Puerto local del modo --http.")] = 8765,
+    dominio: Annotated[
+        list[str] | None,
+        typer.Option(help="Dominio público del túnel, p. ej. mi-pc.colibri.ts.net. Repetible."),
+    ] = None,
+) -> None:
+    """Inicia el servidor MCP para un agente como Claude: por stdio, o por HTTP con --http."""
+    # El SDK de MCP solo se carga para este comando.
+    from mcp.server.transport_security import TransportSecuritySettings
 
-    servidor.run()
+    from auditor_dian.base import inicio
+    from auditor_dian.servidor import servidor, token_http
+
+    if not http:
+        servidor.run()
+        return
+    try:
+        token = token_http()
+    except (ValueError, OSError) as error:
+        _fallar(error)
+    # Contra DNS rebinding: solo el dominio del túnel y localhost; sin opciones, el SDK no valida.
+    hosts = [f"127.0.0.1:{puerto}", f"localhost:{puerto}", *(dominio or [])]
+    variable = os.environ.get("AUDITOR_DIAN_TOKEN")
+    origen = "AUDITOR_DIAN_TOKEN" if variable else inicio() / "token-mcp"
+    typer.echo(
+        f"Servidor MCP en http://127.0.0.1:{puerto}/mcp/<token> (token en {origen}).\n"
+        f"URL del conector: https://{(dominio or ['<dominio del túnel>'])[0]}/mcp/<token>",
+        err=True,
+    )
+    servidor.run(
+        "streamable-http",
+        host="127.0.0.1",  # nunca en la red: solo el túnel llega a él
+        port=puerto,
+        streamable_http_path=f"/mcp/{token}",
+        stateless_http=True,
+        json_response=True,
+        transport_security=TransportSecuritySettings(
+            enable_dns_rebinding_protection=True,
+            allowed_hosts=hosts,
+            allowed_origins=["https://claude.ai"],
+        ),
+    )
 
 
 def _tabla(columnas: list[str], filas: list[tuple]) -> str:

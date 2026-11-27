@@ -13,7 +13,7 @@ from mcp.client import Client
 from mcp.client.stdio import StdioServerParameters
 
 from auditor_dian import servidor as modulo
-from auditor_dian.servidor import AVISO, servidor
+from auditor_dian.servidor import AVISO, TOKEN, servidor, token_http
 
 CUFE_FV1002 = CUFE_FV1001[:-2] + "12"
 CUDE_NC55 = "cude" + "0" * 88 + "091"
@@ -252,6 +252,110 @@ async def test_errores_se_explican_al_agente(base):
     )
 
 
+def test_token_http_se_crea_una_vez_y_solo_lo_lee_su_dueno(inicio_temporal):
+    token = token_http()
+
+    archivo = inicio_temporal / "token-mcp"
+    assert archivo.stat().st_mode & 0o777 == 0o600
+    assert TOKEN.fullmatch(token) and len(token) >= 43  # 32 bytes en base64 URL
+    assert token_http() == token  # no cambia entre arranques: la URL del conector sigue sirviendo
+
+
+def test_token_http_desde_la_variable_de_entorno(monkeypatch, inicio_temporal):
+    monkeypatch.setenv("AUDITOR_DIAN_TOKEN", "a" * 32)
+    assert token_http() == "a" * 32
+    assert not (inicio_temporal / "token-mcp").exists()
+
+    monkeypatch.setenv("AUDITOR_DIAN_TOKEN", "corto")
+    with pytest.raises(ValueError, match="32 o más"):
+        token_http()
+
+
+def test_auditor_mcp_http_rechaza_un_token_invalido(monkeypatch):
+    from typer.testing import CliRunner
+
+    from auditor_dian.cli import app
+
+    monkeypatch.setenv("AUDITOR_DIAN_TOKEN", "con/barra" * 5)
+    r = CliRunner().invoke(app, ["mcp", "--http"])
+
+    assert r.exit_code == 1 and "AUDITOR_DIAN_TOKEN" in r.output
+
+
+@pytest.mark.anyio
+async def test_auditor_mcp_responde_por_http_solo_con_su_token_y_dominio(base, inicio_temporal):
+    # De punta a punta, como lo alcanza claude.ai a través del túnel.
+    import signal
+    import socket
+    import subprocess
+    import urllib.error
+    import urllib.request
+
+    with socket.socket() as s:
+        s.bind(("127.0.0.1", 0))
+        puerto = s.getsockname()[1]
+    proceso = subprocess.Popen(
+        [str(Path(sys.executable).with_name("auditor")), "mcp", "--http"]
+        + ["--puerto", str(puerto), "--dominio", "mi-pc.ejemplo.ts.net"],
+        env={**os.environ, "AUDITOR_DIAN_HOME": str(inicio_temporal)},
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    try:
+        base_url = f"http://127.0.0.1:{puerto}"
+        with anyio.fail_after(20):
+            while True:
+                try:
+                    socket.create_connection(("127.0.0.1", puerto), timeout=1).close()
+                    break
+                except OSError:
+                    await anyio.sleep(0.1)
+        token = (inicio_temporal / "token-mcp").read_text()
+
+        async with Client(f"{base_url}/mcp/{token}") as cliente:
+            r = await cliente.call_tool(
+                "resumen_periodo",
+                {"cliente": CLIENTE, "desde": "2026-01-01", "hasta": "2026-02-28"},
+            )
+        filas = json.loads(r.content[0].text)["filas"]
+        assert next(f["valor"] for f in filas if f["concepto"] == "iva_total") == "40500"
+
+        inicializar = {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "initialize",
+            "params": {
+                "protocolVersion": "2025-06-18",
+                "capabilities": {},
+                "clientInfo": {"name": "prueba", "version": "0"},
+            },
+        }
+        encabezados = {"Accept": "application/json, text/event-stream"}
+
+        def post(ruta: str, **extra) -> int:
+            pedido = urllib.request.Request(
+                base_url + ruta,
+                data=json.dumps(inicializar).encode(),
+                headers={**encabezados, "Content-Type": "application/json", **extra},
+            )
+            try:
+                with urllib.request.urlopen(pedido, timeout=10) as respuesta:
+                    return respuesta.status
+            except urllib.error.HTTPError as error:
+                return error.code
+
+        assert post("/mcp") == 404  # sin token
+        assert post(f"/mcp/{'x' * 43}") == 404  # otro token
+        assert post(f"/mcp/{token}", Host="mi-pc.ejemplo.ts.net") == 200  # el túnel
+        assert post(f"/mcp/{token}", Host="atacante.com") == 421  # DNS rebinding
+        assert post(f"/mcp/{token}", Origin="https://atacante.com") == 403
+    finally:
+        proceso.send_signal(signal.SIGINT)  # apagado ordenado, como Ctrl+C
+        _, errores = proceso.communicate(timeout=10)
+    assert "URL del conector: https://mi-pc.ejemplo.ts.net/mcp/<token>" in errores
+    assert token not in errores  # el token no queda en los registros
+
+
 @pytest.mark.anyio
 async def test_listar_clientes_reporta_una_base_ilegible(base, inicio_temporal):
     (inicio_temporal / "clientes" / "123").mkdir()  # carpeta sin base
@@ -288,6 +392,27 @@ def test_comando_mcp_inicia_el_servidor(monkeypatch):
 
     assert CliRunner().invoke(app, ["mcp"]).exit_code == 0
     assert llamadas == ["stdio"]
+
+
+def test_comando_mcp_http_escucha_solo_en_localhost_con_el_token(monkeypatch, inicio_temporal):
+    from typer.testing import CliRunner
+
+    from auditor_dian.cli import app
+
+    llamadas = []
+    monkeypatch.setattr(servidor, "run", lambda *a, **k: llamadas.append((a, k)))
+
+    r = CliRunner().invoke(app, ["mcp", "--http", "--dominio", "mi-pc.ejemplo.ts.net"])
+
+    assert r.exit_code == 0
+    ((transporte,), opciones) = llamadas[0]
+    token = (inicio_temporal / "token-mcp").read_text()
+    assert transporte == "streamable-http" and opciones["host"] == "127.0.0.1"
+    assert opciones["streamable_http_path"] == f"/mcp/{token}"
+    seguridad = opciones["transport_security"]
+    assert seguridad.enable_dns_rebinding_protection
+    assert seguridad.allowed_hosts == ["127.0.0.1:8765", "localhost:8765", "mi-pc.ejemplo.ts.net"]
+    assert "token-mcp" in r.output and token not in r.output
 
 
 def test_nombres_de_herramientas_y_parametros_validos_para_la_api_de_claude():

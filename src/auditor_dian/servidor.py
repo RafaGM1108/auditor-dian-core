@@ -8,7 +8,9 @@ decimal exacto ("150500.5"), nunca como float, y cada respuesta lleva el aviso d
 
 import base64
 import inspect
+import os
 import re
+import secrets
 import unicodedata
 from datetime import date
 from decimal import Decimal
@@ -62,6 +64,25 @@ CARPETAS = {
 # herramienta en silencio. https://docs.claude.com/en/docs/agents-and-tools/tool-use/implement-tool-use
 NOMBRE_HERRAMIENTA = re.compile(r"[a-zA-Z0-9_-]{1,64}")
 NOMBRE_PARAMETRO = re.compile(r"[a-zA-Z0-9_.-]{1,64}")
+
+
+TOKEN = re.compile(r"[A-Za-z0-9_-]{32,}")
+
+
+def token_http() -> str:
+    """Secreto de la URL del servidor HTTP (decisión 0014): `AUDITOR_DIAN_TOKEN`, o uno de 256
+    bits que se crea la primera vez en la carpeta de datos, legible solo por su dueño."""
+    if token := os.environ.get("AUDITOR_DIAN_TOKEN", "").strip():
+        if not TOKEN.fullmatch(token):
+            raise ValueError("AUDITOR_DIAN_TOKEN debe tener 32 o más letras, números, - o _")
+        return token
+    archivo = inicio() / "token-mcp"
+    if not archivo.exists():
+        archivo.parent.mkdir(parents=True, exist_ok=True)
+        descriptor = os.open(archivo, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        with os.fdopen(descriptor, "w", encoding="utf-8") as f:
+            f.write(secrets.token_urlsafe(32))
+    return archivo.read_text(encoding="utf-8").strip()
 
 
 def nombres_invalidos(nombre: str, esquema: dict) -> list[str]:

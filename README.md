@@ -72,6 +72,21 @@ Claude revisa tu carpeta de Descargas y reparte cada factura al cliente que apar
 - **El NIT como lo escribas:** *900.000.009-0*, *9000000090* o *C.C. 79.123.456*. El dígito de verificación se interpreta solo.
 - **Repetir es seguro:** cargar dos veces lo mismo no duplica nada.
 
+<details>
+<summary><strong>Usarlo desde claude.ai o el celular, sin sacar las facturas del equipo</strong></summary>
+
+El servidor sigue corriendo en tu computador; un túnel gratuito ([Tailscale Funnel](https://tailscale.com/kb/1223/funnel)) le da una dirección pública fija para que Claude lo alcance desde la web o la app. El computador tiene que estar encendido. Detalles en la [decisión 0014](docs/decisiones/0014-servidor-por-http-con-tunel.md).
+
+1. Instala el comando `auditor`: `uv tool install git+https://github.com/RafaGM1108/auditor-dian-core`.
+2. Instala [Tailscale](https://tailscale.com/download), inicia sesión (`sudo tailscale up`) y publica el puerto: `tailscale funnel --bg 8765`. La primera vez te pide activar HTTPS y Funnel en tu cuenta. Anota la dirección que muestra, por ejemplo `mi-pc.colibri.ts.net`.
+3. Inicia el servidor: `auditor mcp --http --dominio mi-pc.colibri.ts.net`.
+4. En claude.ai, *Configuración → Conectores → Agregar conector personalizado*, con la URL `https://mi-pc.colibri.ts.net/mcp/<token>` y sin inicio de sesión. El token está en `~/.auditor-dian/token-mcp`.
+
+> [!WARNING]
+> **La URL completa es una contraseña**: quien la tenga puede consultar y cargar facturas en tu equipo. No la compartas. Para cambiarla, borra `~/.auditor-dian/token-mcp` y reinicia el servidor.
+
+</details>
+
 ## Qué puedes preguntar
 
 | Pregunta | Qué responde |
