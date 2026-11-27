@@ -12,6 +12,20 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha, qué se hizo, 
 
 
 
+## 2026-11-26 — Los seis informes se consultan desde el chat (#11)
+
+**Qué se hizo**
+- Tres herramientas MCP de lectura: `compras_por_proveedor`, `iva_compras_por_bimestre` y `no_validadas`. Reusan los informes SQL que ya existían y entregan resumen ya sumado, detalle con CUFE, nota y aviso, como `facturas_credito`. El servidor pasa de 11 a 14 herramientas.
+- Pruebas con cifras calculadas a mano sobre los fixtures; manifiesto de la extensión, README, SPEC §10 y decisión 0007 actualizados.
+- Issues y tablero público del proyecto en GitHub (Project "Auditor DIAN Core").
+
+**Qué se aprendió**
+- El README prometía "¿cuánto le compró a cada proveedor?", pero ninguna herramienta de lectura lo respondía: el agente habría tenido que sumar filas de `buscar_documentos`.
+- Declarar como enum los parámetros `informe`, `tipo` y `medio_pago` rompería los plugins y dejaría códigos válidos sin búsqueda; se descartó (#12).
+
+**Problemas encontrados**
+- Ninguno.
+
 ## 2026-11-20 — README profesional y política de seguridad
 
 **Qué se hizo**

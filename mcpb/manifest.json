@@ -69,6 +69,18 @@
       "description": "Facturas del mismo proveedor y número con distinto CUFE (posibles duplicados) y facturas anuladas total o parcialmente por notas crédito (tolerancia de 2 pesos)."
     },
     {
+      "name": "compras_por_proveedor",
+      "description": "Cuánto le compró el cliente a cada proveedor (NIT) en el periodo, ya sumado: documentos, subtotal y total, con las notas crédito y de ajuste restadas y las notas débito sumadas. El detalle trae cada documento con su CUFE."
+    },
+    {
+      "name": "iva_compras_por_bimestre",
+      "description": "IVA en compras por bimestre y tarifa, ya sumado y neto de notas crédito, con base y número de documentos. El detalle trae cada documento y tarifa con su CUFE."
+    },
+    {
+      "name": "no_validadas",
+      "description": "Documentos que llegaron sin la respuesta de validación de la DIAN (sin_respuesta) o que la DIAN rechazó (rechazada), con el archivo de donde salieron para ubicarlos."
+    },
+    {
       "name": "exportar_informe",
       "description": "Guarda un informe del periodo en un Excel nuevo, con una hoja de resumen y otra de detalle con los CUFE."
     },
