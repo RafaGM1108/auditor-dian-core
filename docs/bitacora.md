@@ -12,6 +12,18 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha, qué se hizo, 
 
 
 
+## 2026-11-26 — Página para contadores en GitHub Pages (#6)
+
+**Qué se hizo**
+- `site/index.html`: una sola página, sin dependencias ni scripts, con modo claro y oscuro: qué es, la demostración, qué preguntar, instalación en cuatro pasos, seguridad y qué hacer si algo falla. Incluye el aviso de que no es un producto oficial de la DIAN.
+- `.github/workflows/pagina.yml` la publica al cambiar `site/`; copia el logo y el GIF desde donde ya viven, para no duplicarlos. La imagen para redes (`site/og.png`) se muestra al compartir el enlace.
+
+**Qué se aprendió**
+- Un `<details>` de GitHub no genera ancla: el enlace a la guía del túnel apunta a la sección de instalación.
+
+**Problemas encontrados**
+- Ninguno.
+
 ## 2026-11-26 — Guía para contribuir (#2)
 
 **Qué se hizo**

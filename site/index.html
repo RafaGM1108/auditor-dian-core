@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auditor DIAN: tus facturas electrónicas, consultables desde Claude</title>
+<meta name="description" content="Carga las facturas electrónicas DIAN que recibe cada cliente y pregúntale a Claude: IVA por bimestre, compras por proveedor, anulaciones. Cifras exactas con sus CUFE, todo en tu equipo. No es un producto oficial de la DIAN.">
+<meta property="og:title" content="Auditor DIAN">
+<meta property="og:description" content="Las facturas electrónicas de cada cliente, consultables desde Claude. Cifras exactas con sus CUFE, todo en tu equipo.">
+<meta property="og:image" content="https://rafagm1108.github.io/auditor-dian-core/og.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<style>
+  :root {
+    --fondo: #f8fafc; --texto: #0f172a; --suave: #475569; --tarjeta: #ffffff; --borde: #e2e8f0;
+    --marca: #134e4a; --marca-clara: #ccfbf1; --acento: #b45309; --aviso: #fef3c7; --aviso-borde: #f59e0b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fondo: #0b1220; --texto: #e2e8f0; --suave: #94a3b8; --tarjeta: #111a2e; --borde: #1e293b;
+      --marca: #5eead4; --marca-clara: #134e4a; --acento: #fbbf24; --aviso: #3a2a05; --aviso-borde: #b45309;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--fondo); color: var(--texto); }
+  a { color: var(--marca); }
+  a:focus-visible, .boton:focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
+  .contenedor { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+  header.contenedor { padding-top: 56px; padding-bottom: 32px; text-align: center; }
+  header img { width: 96px; height: 96px; }
+  h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 12px 0 8px; letter-spacing: -0.02em; }
+  .lema { font-size: 1.2rem; color: var(--suave); max-width: 640px; margin: 0 auto 24px; }
+  .botones { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .boton { display: inline-block; padding: 12px 22px; border-radius: 10px; font-weight: 600; text-decoration: none; border: 2px solid var(--marca); }
+  .boton.principal { background: var(--marca); color: var(--fondo); }
+  .aviso { background: var(--aviso); border-left: 4px solid var(--aviso-borde); padding: 12px 16px; border-radius: 6px; margin: 28px auto 0; max-width: 720px; font-size: 0.95rem; text-align: left; }
+  section { padding: 36px 0; }
+  h2 { font-size: 1.6rem; margin: 0 0 16px; }
+  .demo { width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--borde); display: block; }
+  .pie-demo { color: var(--suave); font-size: 0.9rem; text-align: center; margin-top: 8px; }
+  .rejilla { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .tarjeta { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 12px; padding: 18px 20px; }
+  .tarjeta h3 { margin: 0 0 6px; font-size: 1.05rem; }
+  .tarjeta p { margin: 0; color: var(--suave); }
+  .pregunta { font-style: italic; }
+  ol.pasos { counter-reset: paso; list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+  ol.pasos li { counter-increment: paso; background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 12px; padding: 16px 20px 16px 64px; position: relative; }
+  ol.pasos li::before { content: counter(paso); position: absolute; left: 18px; top: 14px; width: 32px; height: 32px; border-radius: 50%; background: var(--marca); color: var(--fondo); font-weight: 700; display: grid; place-items: center; }
+  code { background: var(--marca-clara); padding: 1px 6px; border-radius: 4px; font-size: 0.92em; }
+  footer.contenedor { border-top: 1px solid var(--borde); padding-top: 28px; padding-bottom: 48px; color: var(--suave); font-size: 0.9rem; text-align: center; }
+</style>
+</head>
+<body>
+<header class="contenedor">
+  <img src="logo.svg" alt="" width="96" height="96">
+  <h1>Auditor DIAN</h1>
+  <p class="lema">Las facturas electrónicas que recibe cada cliente, consultables desde Claude. Cifras exactas, con los CUFE que las respaldan. Todo en tu equipo.</p>
+  <div class="botones">
+    <a class="boton principal" href="https://github.com/RafaGM1108/auditor-dian-core/releases/latest">Descargar para Claude Desktop</a>
+    <a class="boton" href="https://github.com/RafaGM1108/auditor-dian-core">Ver el código en GitHub</a>
+  </div>
+  <p class="aviso"><strong>No es un producto oficial de la DIAN</strong>, ni está afiliado a ella ni respaldado por ella. "DIAN" solo describe las facturas electrónicas que procesa. Las cifras son un apoyo y <strong>requieren revisión de un contador</strong>.</p>
+</header>
+
+<main class="contenedor">
+  <section aria-labelledby="demo">
+    <h2 id="demo">Así funciona</h2>
+    <img class="demo" src="demo-claude-code.gif" width="1000" height="667" loading="lazy" alt="Claude registra un cliente, carga sus facturas desde Descargas, deja fuera la que es de otra persona y responde el IVA del bimestre con los CUFE que lo respaldan">
+    <p class="pie-demo">Demostración real con facturas sintéticas.</p>
+  </section>
+
+  <section aria-labelledby="preguntas">
+    <h2 id="preguntas">Qué le puedes preguntar</h2>
+    <div class="rejilla">
+      <div class="tarjeta"><h3 class="pregunta">"¿Cuánto IVA en compras hubo en el bimestre 1?"</h3><p>El IVA por tarifa, neto de notas crédito, con sus CUFE.</p></div>
+      <div class="tarjeta"><h3 class="pregunta">"¿Cuánto le compró a cada proveedor en el semestre?"</h3><p>Totales por NIT, con las notas crédito y de ajuste restadas.</p></div>
+      <div class="tarjeta"><h3 class="pregunta">"¿Hay facturas repetidas o anuladas?"</h3><p>Posibles duplicados y anulaciones totales o parciales.</p></div>
+      <div class="tarjeta"><h3 class="pregunta">"¿Qué facturas a crédito llegaron en marzo?"</h3><p>Proveedor, valor y vencimiento.</p></div>
+      <div class="tarjeta"><h3 class="pregunta">"¿Hay facturas que la DIAN no haya validado?"</h3><p>Las que llegaron sin respuesta de validación o rechazadas.</p></div>
+      <div class="tarjeta"><h3 class="pregunta">"Exporta el IVA a un Excel en mi escritorio"</h3><p>Un archivo nuevo con hojas de resumen y detalle.</p></div>
+    </div>
+    <p>También trae atajos listos: <strong>Cargar mis facturas</strong>, <strong>Cerrar el bimestre</strong> y <strong>Revisar un proveedor</strong>.</p>
+  </section>
+
+  <section aria-labelledby="instalar">
+    <h2 id="instalar">Instalación en cuatro pasos</h2>
+    <p>No hace falta saber programar ni contratar un servidor.</p>
+    <ol class="pasos">
+      <li>Instala <a href="https://claude.ai/download">Claude Desktop</a> e inicia sesión.</li>
+      <li>Descarga <code>auditor-dian-&lt;versión&gt;.mcpb</code> de la <a href="https://github.com/RafaGM1108/auditor-dian-core/releases/latest">última versión</a> y ábrelo con doble clic.</li>
+      <li>Elige la <strong>carpeta de datos</strong>, donde se guardan las bases de tus clientes. La primera vez, Claude Desktop instala lo necesario en un par de minutos.</li>
+      <li>Descarga las facturas del correo como siempre y escríbele a Claude: <em>"Carga mis facturas"</em>. Él las reparte por cliente según el comprador de cada factura.</li>
+    </ol>
+    <p>¿Lo quieres en el celular o en claude.ai? Se puede, sin que las facturas salgan de tu equipo: <a href="https://github.com/RafaGM1108/auditor-dian-core#instalación-para-contadores">guía con un túnel gratuito</a>.</p>
+  </section>
+
+  <section aria-labelledby="seguridad">
+    <h2 id="seguridad">Seguridad y privacidad</h2>
+    <div class="rejilla">
+      <div class="tarjeta"><h3>Tus facturas no salen del equipo</h3><p>Las bases y los archivos se quedan en tu computador. El código no hace llamadas de red.</p></div>
+      <div class="tarjeta"><h3>Nada se borra ni se modifica</h3><p>Cargar solo agrega, y repetir una carga no duplica nada.</p></div>
+      <div class="tarjeta"><h3>Un cliente nunca se mezcla con otro</h3><p>Cuatro filtros independientes, basados en la identificación de cada documento.</p></div>
+      <div class="tarjeta"><h3>Cifras exactas y verificables</h3><p>Claude no calcula: cada cifra sale de una consulta y viene con los CUFE que la respaldan.</p></div>
+      <div class="tarjeta"><h3>Probado con facturas reales</h3><p>57 facturas de 20 emisores se leen sin errores y cuadran con el PDF de cada emisor.</p></div>
+      <div class="tarjeta"><h3>Código abierto</h3><p>Licencia MIT y pruebas con cobertura total en cada cambio. Cualquiera lo puede auditar.</p></div>
+    </div>
+    <p>Claude solo recibe lo que responde cada herramienta: cifras, CUFE, nombres y NIT de proveedores. Para reportar una vulnerabilidad, mira la <a href="https://github.com/RafaGM1108/auditor-dian-core/blob/master/SECURITY.md">política de seguridad</a>.</p>
+  </section>
+
+  <section aria-labelledby="ayuda">
+    <h2 id="ayuda">Si algo falla o una cifra no cuadra</h2>
+    <p>Pídele a Claude <em>"dame el diagnóstico de Auditor DIAN"</em> y abre un <a href="https://github.com/RafaGM1108/auditor-dian-core/issues/new/choose">reporte</a>. El diagnóstico no incluye montos ni contenido de facturas. Para preguntas de uso están las <a href="https://github.com/RafaGM1108/auditor-dian-core/discussions">discusiones</a>.</p>
+    <p class="aviso">No adjuntes facturas reales en un reporte público. Si una cifra no cuadra, di cuál esperabas y de qué documento la sacaste.</p>
+  </section>
+</main>
+
+<footer class="contenedor">
+  <p>Auditor DIAN · Código abierto con licencia MIT · <a href="https://github.com/RafaGM1108/auditor-dian-core/blob/master/CONTRIBUTING.md">Cómo contribuir</a></p>
+  <p>No es un producto oficial de la DIAN ni está afiliado a ella.</p>
+</footer>
+</body>
+</html>
