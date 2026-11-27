@@ -59,6 +59,9 @@ async def test_herramientas_y_cuales_escriben():
         "resumen_periodo",
         "facturas_credito",
         "duplicados_y_anulaciones",
+        "compras_por_proveedor",
+        "iva_compras_por_bimestre",
+        "no_validadas",
         "exportar_informe",
         "crear_cliente",
         "ingerir_facturas",
@@ -178,6 +181,49 @@ async def test_facturas_credito_y_duplicados(base):
         ("anulada_parcial", "FV1001", "10500")
     ]
     assert "±2,00" in r["nota"]
+
+
+@pytest.mark.anyio
+async def test_compras_por_proveedor_ya_sumadas(base):
+    # Las cifras llegan sumadas para que el agente no tenga que sumar filas de buscar_documentos.
+    r = await llamar(
+        "compras_por_proveedor", cliente=CLIENTE, desde="2026-01-01", hasta="2026-03-31"
+    )
+
+    # A mano: 150.500 + 155.500 - 10.500 (NC55) + 4.500 (ND7) + 150.500 (FV1003)
+    # y 500.000 (DS20) - 100.000 (NA3).
+    assert [(f["emisor_identificacion"], f["documentos"], f["total"]) for f in r["resumen"]] == [
+        ("900000001", 5, "450500"),
+        ("1000000001", 2, "400000"),
+    ]
+    assert {f["cufe"] for f in r["detalle"]} >= {CUFE_FV1001, CUFE_FV1002, CUDE_NC55}
+    assert "notas débito suman" in r["nota"]
+
+
+@pytest.mark.anyio
+async def test_iva_compras_por_bimestre_y_tarifa(base):
+    r = await llamar(
+        "iva_compras_por_bimestre", cliente=CLIENTE, desde="2026-01-01", hasta="2026-04-30"
+    )
+
+    # Bimestre 1 igual que resumen_periodo (38.000 + 2.500); bimestre 2 es FV1003 de marzo.
+    assert [(f["bimestre"], f["tarifa"], f["iva"]) for f in r["resumen"]] == [
+        ("2026-01/02", "5", "2500"),
+        ("2026-01/02", "19", "38000"),
+        ("2026-03/04", "5", "1500"),
+        ("2026-03/04", "19", "19000"),
+    ]
+    assert "No es una determinación de IVA descontable" in r["nota"]
+
+
+@pytest.mark.anyio
+async def test_no_validadas_con_su_archivo(base):
+    r = await llamar("no_validadas", cliente=CLIENTE, desde="2026-01-01", hasta="2026-01-31")
+
+    # Los fixtures son XML sueltos, sin la respuesta de la DIAN que trae el AttachedDocument.
+    # En enero: FV1001, FV1002, NC55 y DS20.
+    assert [(f["estado"], f["documentos"]) for f in r["resumen"]] == [("sin_respuesta", 4)]
+    assert all(f["archivo"] for f in r["detalle"])
 
 
 @pytest.mark.anyio

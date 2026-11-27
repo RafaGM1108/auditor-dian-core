@@ -103,6 +103,9 @@ Las consultas abren la base en modo solo lectura. Las herramientas de carga (`cr
 | `resumen_periodo` | cliente, desde, hasta | totales de compras, IVA, retenciones, conteos por tipo, con CUFEs |
 | `facturas_credito` | cliente, desde, hasta | filas con estado de eventos "por verificar" |
 | `duplicados_y_anulaciones` | cliente, desde, hasta | filas |
+| `compras_por_proveedor` | cliente, desde, hasta | totales por NIT emisor ya sumados + detalle con CUFE (*agregada el 2026-11-26*) |
+| `iva_compras_por_bimestre` | cliente, desde, hasta | IVA por bimestre y tarifa ya sumado + detalle con CUFE (*agregada el 2026-11-26*) |
+| `no_validadas` | cliente, desde, hasta | documentos sin respuesta DIAN o rechazados, con su archivo (*agregada el 2026-11-26*) |
 | `exportar_informe` | cliente, informe, desde, hasta, ruta | ruta del `.xlsx` generado |
 | `crear_cliente` | cliente (NIT o cédula como lo escriba el usuario; se guarda sin DV), nombre | ruta de la base creada; si ya existía, su historial sin cambiar nada; aviso si otro cliente tiene el mismo nombre |
 | `ingerir_facturas` | cliente, ruta (ZIP, XML o carpeta; completa o como la nombra el usuario, p. ej. "Descargas/facturas enero") | archivos y documentos cargados, advertencias, errores |

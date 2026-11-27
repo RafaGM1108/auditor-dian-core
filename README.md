@@ -85,7 +85,7 @@ Claude revisa tu carpeta de Descargas y reparte cada factura al cliente que apar
 | *Exporta el informe de IVA a un Excel en mi escritorio* | Un `.xlsx` nuevo con hojas de resumen y detalle |
 
 <details>
-<summary><strong>Las 11 herramientas que Claude puede usar</strong></summary>
+<summary><strong>Las 14 herramientas que Claude puede usar</strong></summary>
 
 | Herramienta | Título | Efecto |
 | --- | --- | --- |
@@ -95,6 +95,9 @@ Claude revisa tu carpeta de Descargas y reparte cada factura al cliente que apar
 | `resumen_periodo` | Resumen de compras, IVA y retenciones | Lectura |
 | `facturas_credito` | Facturas a crédito | Lectura |
 | `duplicados_y_anulaciones` | Facturas repetidas y anuladas | Lectura |
+| `compras_por_proveedor` | Compras por proveedor | Lectura |
+| `iva_compras_por_bimestre` | IVA en compras por bimestre | Lectura |
+| `no_validadas` | Facturas sin validación DIAN | Lectura |
 | `diagnostico` | Diagnóstico para soporte | Lectura, sin montos |
 | `exportar_informe` | Exportar informe a Excel | Crea un archivo nuevo |
 | `crear_cliente` | Registrar cliente | Agrega |

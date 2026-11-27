@@ -283,7 +283,8 @@ def buscar_documentos(
     - "¿Qué facturas de más de 5 millones llegaron en marzo?"
     - "Busca la factura con este CUFE" / "¿Cuáles pagué con tarjeta de crédito?"
 
-    No la use para totales de IVA, compras o retenciones (use resumen_periodo): aquí no se suma.
+    No la use para totales (use resumen_periodo, compras_por_proveedor o
+    iva_compras_por_bimestre): aquí no se suma.
     Devuelve hasta 200 documentos y cuántos coinciden en total; si son más, pida acotar."""
     filtros = [
         (
@@ -373,6 +374,49 @@ def duplicados_y_anulaciones(cliente: Cliente, desde: Desde, hasta: Hasta) -> di
     - "¿Qué facturas me anularon con nota crédito?"
     - Antes de cerrar un periodo, para revisar que no se cuente dos veces una compra."""
     return _informe(cliente, "duplicados_y_anulaciones", desde, hasta)
+
+
+@herramienta("Compras por proveedor", LECTURA)
+def compras_por_proveedor(cliente: Cliente, desde: Desde, hasta: Hasta) -> dict:
+    """Cuánto le compró el cliente a cada proveedor (NIT) en el periodo, ya sumado: documentos,
+    subtotal y total, con las notas crédito y de ajuste restadas y las notas débito sumadas. El
+    detalle trae cada documento con su CUFE.
+
+    Úsela cuando el usuario pregunte, por ejemplo:
+    - "¿Cuánto le compró a cada proveedor en el primer semestre?"
+    - "¿Quiénes son sus principales proveedores este año?"
+    - "¿Cuánto le facturó Claro en 2025?"
+
+    Cite los totales del resumen tal cual: no sume filas del detalle."""
+    return _informe(cliente, "compras_por_proveedor", desde, hasta)
+
+
+@herramienta("IVA en compras por bimestre", LECTURA)
+def iva_compras_por_bimestre(cliente: Cliente, desde: Desde, hasta: Hasta) -> dict:
+    """IVA en compras por bimestre y tarifa, ya sumado y neto de notas crédito, con base y
+    número de documentos. El detalle trae cada documento y tarifa con su CUFE.
+
+    Úsela cuando el usuario pregunte por varios bimestres o por tarifa, por ejemplo:
+    - "¿Cuánto IVA hubo en cada bimestre de 2025?"
+    - "¿Cuánto IVA al 5 % y cuánto al 19 % en el bimestre 3?"
+
+    Para el IVA total de un solo periodo basta resumen_periodo. Es el IVA que figura en los
+    documentos, no una determinación de IVA descontable: eso lo decide el contador."""
+    return _informe(cliente, "iva_compras_por_bimestre", desde, hasta)
+
+
+@herramienta("Facturas sin validación DIAN", LECTURA)
+def no_validadas(cliente: Cliente, desde: Desde, hasta: Hasta) -> dict:
+    """Documentos que llegaron sin la respuesta de validación de la DIAN (sin_respuesta) o que
+    la DIAN rechazó (rechazada), con el archivo de donde salieron para ubicarlos.
+
+    Úsela cuando el usuario pregunte, por ejemplo:
+    - "¿Hay facturas que la DIAN no haya validado?"
+    - "¿Me llegó alguna factura rechazada?"
+    - Antes de cerrar un periodo, para no contar documentos sin validar.
+
+    Sin respuesta no significa inválida: puede que el emisor no la haya incluido en el ZIP."""
+    return _informe(cliente, "no_validadas", desde, hasta)
 
 
 @herramienta("Exportar informe a Excel", AGREGA)
