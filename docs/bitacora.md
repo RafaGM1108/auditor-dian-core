@@ -12,6 +12,19 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha, qué se hizo, 
 
 
 
+## 2026-11-27 — Publicación en PyPI con trusted publishing (#4)
+
+**Qué se hizo**
+- `.github/workflows/publicar.yml`: al crear una etiqueta `vX.Y.Z`, corre las pruebas, construye con `uv build` y publica con `uv publish` por *trusted publishing*, sin tokens guardados. Si la etiqueta no coincide con la versión de `pyproject.toml`, no publica.
+- El README usa ahora enlaces absolutos, porque PyPI no resuelve los relativos y el logo y el GIF salían rotos. El logo va en PNG, porque el SVG servido en crudo no se muestra en todos los visores.
+- `pyproject.toml` agrega los enlaces del proyecto (página, repositorio, issues). En `CONTRIBUTING.md` quedaron los pasos para publicar una versión.
+
+**Qué se aprendió**
+- El paquete que arma `uv_build` solo incluye `src/`, el README, la licencia y `pyproject.toml`. Por eso `data/`, con las facturas reales, no puede terminar en PyPI aunque esté en la misma carpeta.
+
+**Problemas encontrados**
+- Falta registrar el publicador en pypi.org: lo tiene que hacer el dueño de la cuenta.
+
 ## 2026-11-26 — Página para contadores en GitHub Pages (#6)
 
 **Qué se hizo**

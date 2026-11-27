@@ -1,0 +1,22 @@
+name: Publicar en PyPI
+
+# Al etiquetar vX.Y.Z: prueba, construye y publica con trusted publishing (OIDC, sin tokens).
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: La etiqueta coincide con la versión del paquete
+        run: test "${GITHUB_REF_NAME#v}" = "$(uv version --short)"
+      - run: uv sync --locked
+      - run: uv run pytest --cov=auditor_dian --cov-fail-under=100
+      - run: uv build
+      - run: uv publish

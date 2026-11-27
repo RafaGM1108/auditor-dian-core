@@ -46,6 +46,11 @@ Si no quedó escrito en `docs/`, no pasó:
 - Un pull request por tema, con `Closes #N` en la descripción.
 - Explica cómo lo probaste. La plantilla trae la lista de chequeo.
 
+## Publicar una versión (mantenedores)
+
+1. Sube la versión en `pyproject.toml` (`uv version --bump minor`, por ejemplo) y haz merge del cambio.
+2. `gh release create vX.Y.Z --generate-notes`. La etiqueta dispara `.github/workflows/publicar.yml`, que corre las pruebas, construye y publica en PyPI. Si la etiqueta no coincide con la versión, no publica nada.
+
 ## Seguridad
 
 Si encuentras una vulnerabilidad, **no abras una issue pública**: sigue [SECURITY.md](SECURITY.md).

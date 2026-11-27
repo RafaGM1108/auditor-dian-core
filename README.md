@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="src/auditor_dian/logo.svg" alt="Logo de Auditor DIAN: una factura bajo una lupa" width="120">
+  <img src="https://raw.githubusercontent.com/RafaGM1108/auditor-dian-core/master/src/auditor_dian/logo.png" alt="Logo de Auditor DIAN: una factura bajo una lupa" width="120">
 </p>
 
 <h1 align="center">Auditor DIAN</h1>
@@ -29,7 +29,7 @@
 > **No es un producto oficial de la DIAN**, ni está afiliado a ella ni respaldado por ella. "DIAN" solo describe las facturas electrónicas que procesa. Las cifras son un apoyo y **requieren revisión de un contador**.
 
 <p align="center">
-  <img src="docs/img/demo-claude-code.gif" alt="Claude registra un cliente, carga sus facturas desde Descargas, deja fuera la que es de otra persona y responde el IVA del bimestre con los CUFE que lo respaldan" width="860">
+  <img src="https://raw.githubusercontent.com/RafaGM1108/auditor-dian-core/master/docs/img/demo-claude-code.gif" alt="Claude registra un cliente, carga sus facturas desde Descargas, deja fuera la que es de otra persona y responde el IVA del bimestre con los CUFE que lo respaldan" width="860">
   <br><sub>Demostración real con facturas sintéticas: registrar un cliente, cargar sus facturas y preguntar el IVA del bimestre.</sub>
 </p>
 
@@ -47,15 +47,15 @@ Está pensado para manejar información tributaria de terceros. Estas son las ga
 | --- | --- |
 | **Tus facturas no salen del equipo** | Las bases y los archivos se quedan en tu computador. El código no hace llamadas de red, y el lector de XML tiene desactivados la red y las entidades externas (protección contra XXE). |
 | **Nada se borra ni se modifica** | Las consultas abren la base en solo lectura. Cargar solo agrega, y repetir una carga no duplica nada: cada archivo se reconoce por su SHA-256 y cada documento por su CUFE. Exportar crea un Excel nuevo y nunca sobrescribe uno existente. |
-| **La información de un cliente nunca termina en otro** | Cuatro filtros independientes, basados en la identificación que trae cada documento: al cargar, al abrir la base, al consultar y al repartir por cliente. Si cargas facturas que no son del cliente, no se guardan y Claude te lo dice ([decisión 0011](docs/decisiones/0011-filtros-entre-clientes.md)). |
+| **La información de un cliente nunca termina en otro** | Cuatro filtros independientes, basados en la identificación que trae cada documento: al cargar, al abrir la base, al consultar y al repartir por cliente. Si cargas facturas que no son del cliente, no se guardan y Claude te lo dice ([decisión 0011](https://github.com/RafaGM1108/auditor-dian-core/blob/master/docs/decisiones/0011-filtros-entre-clientes.md)). |
 | **Las cifras son exactas y trazables** | Montos en decimal exacto, nunca en coma flotante, guardados tal como vienen en el XML. Cada total trae sus CUFE. |
 | **Los archivos maliciosos no lo tumban** | Tope de tamaño por XML leído con un límite real, no el que declara el ZIP. Un archivo dañado se registra y se salta sin afectar a los demás. |
-| **Se puede auditar** | Código abierto con licencia MIT, 142 pruebas con 100 % de cobertura exigida en cada cambio, y cada decisión de diseño documentada en [`docs/decisiones/`](docs/decisiones/README.md). |
+| **Se puede auditar** | Código abierto con licencia MIT, 142 pruebas con 100 % de cobertura exigida en cada cambio, y cada decisión de diseño documentada en [`docs/decisiones/`](https://github.com/RafaGM1108/auditor-dian-core/blob/master/docs/decisiones/README.md). |
 
 > [!NOTE]
 > **Qué ve Claude.** Claude no lee tus archivos ni tus bases: solo recibe lo que cada herramienta responde (cifras, CUFE, nombres y NIT de proveedores), y eso se procesa como cualquier otra conversación con Claude. El diagnóstico para soporte no incluye montos ni contenido de facturas.
 
-Para reportar una vulnerabilidad, mira [SECURITY.md](SECURITY.md).
+Para reportar una vulnerabilidad, mira [SECURITY.md](https://github.com/RafaGM1108/auditor-dian-core/blob/master/SECURITY.md).
 
 ## Instalación para contadores
 
@@ -75,7 +75,7 @@ Claude revisa tu carpeta de Descargas y reparte cada factura al cliente que apar
 <details>
 <summary><strong>Usarlo desde claude.ai o el celular, sin sacar las facturas del equipo</strong></summary>
 
-El servidor sigue corriendo en tu computador; un túnel gratuito ([Tailscale Funnel](https://tailscale.com/kb/1223/funnel)) le da una dirección pública fija para que Claude lo alcance desde la web o la app. El computador tiene que estar encendido. Detalles en la [decisión 0014](docs/decisiones/0014-servidor-por-http-con-tunel.md).
+El servidor sigue corriendo en tu computador; un túnel gratuito ([Tailscale Funnel](https://tailscale.com/kb/1223/funnel)) le da una dirección pública fija para que Claude lo alcance desde la web o la app. El computador tiene que estar encendido. Detalles en la [decisión 0014](https://github.com/RafaGM1108/auditor-dian-core/blob/master/docs/decisiones/0014-servidor-por-http-con-tunel.md).
 
 1. Instala el comando `auditor`: `uv tool install git+https://github.com/RafaGM1108/auditor-dian-core`.
 2. Instala [Tailscale](https://tailscale.com/download), inicia sesión (`sudo tailscale up`) y publica el puerto: `tailscale funnel --bg 8765`. La primera vez te pide activar HTTPS y Funnel en tu cuenta. Anota la dirección que muestra, por ejemplo `mi-pc.colibri.ts.net`.
@@ -139,7 +139,7 @@ flowchart LR
 
 **Informes:** compras por proveedor, IVA de compras por bimestre, retenciones, facturas a crédito, duplicados y anulaciones, y documentos sin validar. Todos se exportan a Excel.
 
-**Verificado con datos reales.** 57 facturas de 20 emisores, de 2020 a 2026, se leen sin errores. Contra el PDF que el propio emisor incluye en el ZIP, 53 coinciden exacto y las 4 restantes se explican: tres porque el PDF redondea y una porque el PDF es una imagen. Las rutas del XML están cotejadas con el Anexo Técnico de Factura Electrónica 1.9 ([detalle](docs/investigacion/anexo-tecnico.md)).
+**Verificado con datos reales.** 57 facturas de 20 emisores, de 2020 a 2026, se leen sin errores. Contra el PDF que el propio emisor incluye en el ZIP, 53 coinciden exacto y las 4 restantes se explican: tres porque el PDF redondea y una porque el PDF es una imagen. Las rutas del XML están cotejadas con el Anexo Técnico de Factura Electrónica 1.9 ([detalle](https://github.com/RafaGM1108/auditor-dian-core/blob/master/docs/investigacion/anexo-tecnico.md)).
 
 ## Si algo falla o una cifra no cuadra
 
@@ -150,7 +150,7 @@ Pídele a Claude *"dame el diagnóstico de Auditor DIAN"* y abre un [reporte](ht
 
 ## Para desarrolladores
 
-¿Quieres aportar? Lee [CONTRIBUTING.md](CONTRIBUTING.md) y mira las issues [`good first issue`](https://github.com/RafaGM1108/auditor-dian-core/labels/good%20first%20issue).
+¿Quieres aportar? Lee [CONTRIBUTING.md](https://github.com/RafaGM1108/auditor-dian-core/blob/master/CONTRIBUTING.md) y mira las issues [`good first issue`](https://github.com/RafaGM1108/auditor-dian-core/labels/good%20first%20issue).
 
 Requiere [uv](https://docs.astral.sh/uv/) y Python 3.11 o superior.
 
@@ -200,17 +200,17 @@ Un paquete aparte puede agregar informes, herramientas MCP o lectores de documen
 mi_plugin = "mi_paquete:register"
 ```
 
-`register(app)` recibe la interfaz de [`plugins.py`](src/auditor_dian/plugins.py), con un ejemplo completo en [`tests/plugin_ejemplo.py`](tests/plugin_ejemplo.py). Un plugin no puede reemplazar nada del núcleo, y uno que falla se reporta y se salta sin afectar lo demás.
+`register(app)` recibe la interfaz de [`plugins.py`](https://github.com/RafaGM1108/auditor-dian-core/blob/master/src/auditor_dian/plugins.py), con un ejemplo completo en [`tests/plugin_ejemplo.py`](https://github.com/RafaGM1108/auditor-dian-core/blob/master/tests/plugin_ejemplo.py). Un plugin no puede reemplazar nada del núcleo, y uno que falla se reporta y se salta sin afectar lo demás.
 </details>
 
 ## Documentación
 
 - [Página para contadores](https://rafagm1108.github.io/auditor-dian-core/): qué es, cómo instalarlo y qué preguntarle, sin detalles técnicos.
-- [`SPEC.md`](SPEC.md): alcance y reglas del proyecto.
-- [`docs/decisiones/`](docs/decisiones/README.md): cada decisión de diseño, con sus alternativas descartadas.
-- [`docs/investigacion/`](docs/investigacion/README.md): cifras, normas y herramientas existentes, con fuentes públicas.
-- [`docs/bitacora.md`](docs/bitacora.md): qué se hizo y qué se aprendió en cada sesión.
+- [`SPEC.md`](https://github.com/RafaGM1108/auditor-dian-core/blob/master/SPEC.md): alcance y reglas del proyecto.
+- [`docs/decisiones/`](https://github.com/RafaGM1108/auditor-dian-core/blob/master/docs/decisiones/README.md): cada decisión de diseño, con sus alternativas descartadas.
+- [`docs/investigacion/`](https://github.com/RafaGM1108/auditor-dian-core/blob/master/docs/investigacion/README.md): cifras, normas y herramientas existentes, con fuentes públicas.
+- [`docs/bitacora.md`](https://github.com/RafaGM1108/auditor-dian-core/blob/master/docs/bitacora.md): qué se hizo y qué se aprendió en cada sesión.
 
 ## Licencia
 
-[MIT](LICENSE). Puedes usarlo, modificarlo y distribuirlo libremente, sin garantía. Las cifras siempre requieren revisión de un contador.
+[MIT](https://github.com/RafaGM1108/auditor-dian-core/blob/master/LICENSE). Puedes usarlo, modificarlo y distribuirlo libremente, sin garantía. Las cifras siempre requieren revisión de un contador.
