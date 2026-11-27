@@ -77,6 +77,8 @@ async def test_herramientas_y_cuales_escriben():
         "ingerir_por_cliente",
     }
     assert not any(herramientas[n].annotations.destructive_hint for n in escriben)
+    repetibles = {n for n in escriben if herramientas[n].annotations.idempotent_hint}
+    assert repetibles == {"crear_cliente", "ingerir_facturas", "ingerir_por_cliente"}
 
 
 @pytest.mark.anyio

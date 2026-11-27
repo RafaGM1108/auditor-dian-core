@@ -12,6 +12,10 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha, qué se hizo, 
 
 
 
+## 2026-11-27 — Reintentos de carga y registro en MCP
+
+La lista de herramientas publica `idempotentHint` para las dos cargas de facturas y el registro de clientes. Las cargas reconocen los archivos y documentos ya ingresados, y registrar de nuevo el mismo NIT devuelve su historial. La prueba de `tools/list` comprueba las tres anotaciones y que la exportación a Excel queda fuera.
+
 ## 2026-11-26 — Nota crédito sobre varias facturas (#7)
 
 **Qué se hizo**
