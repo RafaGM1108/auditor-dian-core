@@ -18,6 +18,11 @@ dependencies = [
     "typer>=0.12",
 ]
 
+[project.urls]
+Homepage = "https://rafagm1108.github.io/auditor-dian-core/"
+Repository = "https://github.com/RafaGM1108/auditor-dian-core"
+Issues = "https://github.com/RafaGM1108/auditor-dian-core/issues"
+
 [project.scripts]
 auditor = "auditor_dian.cli:app"
 
