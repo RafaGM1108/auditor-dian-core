@@ -99,6 +99,8 @@ El servidor sigue corriendo en tu computador; un túnel gratuito ([Tailscale Fun
 | *¿Ya tengo registrada a Mi Cliente SAS? ¿Qué meses tiene cargados?* | El historial del cliente: documentos por tipo y por mes, y cada carga |
 | *Exporta el informe de IVA a un Excel en mi escritorio* | Un `.xlsx` nuevo con hojas de resumen y detalle |
 
+**Atajos listos** (prompts): en Claude Desktop y claude.ai aparecen *Cargar mis facturas*, *Cerrar el bimestre* (pide cliente, año y bimestre) y *Revisar un proveedor*.
+
 <details>
 <summary><strong>Las 14 herramientas que Claude puede usar</strong></summary>
 

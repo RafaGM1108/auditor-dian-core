@@ -9,6 +9,7 @@ import anyio
 import duckdb
 import pytest
 from fabrica import CLIENTE, CUFE_FV1001, crear_base_comun
+from mcp import MCPError
 from mcp.client import Client
 from mcp.client.stdio import StdioServerParameters
 
@@ -774,3 +775,39 @@ async def test_cedula_corta_con_dv_pegado_se_advierte(inicio_temporal, tmp_path)
     (tmp_path / "f.xml").write_text(xml, encoding="utf-8")
     (falta,) = (await llamar("ingerir_por_cliente", ruta=str(tmp_path)))["clientes_no_creados"]
     assert falta["cliente"] == cedula and pegado in falta["nota"]
+
+
+@pytest.mark.anyio
+async def test_prompts_para_quien_no_sabe_que_preguntar():
+    async with Client(servidor) as cliente:
+        prompts = {p.name: p for p in (await cliente.list_prompts()).prompts}
+
+        assert set(prompts) == {"cargar_facturas", "cerrar_bimestre", "revisar_proveedor"}
+        assert all(p.title and p.description for p in prompts.values())
+        argumentos = {a.name: a.required for a in prompts["cerrar_bimestre"].arguments}
+        assert argumentos == {"cliente": True, "anio": True, "bimestre": True}
+
+        async def texto(nombre: str, **argumentos: str) -> str:
+            r = await cliente.get_prompt(nombre, argumentos)
+            return r.messages[0].content.text
+
+        # El periodo lo calcula el código, no el modelo; diciembre y febrero bisiesto incluidos.
+        t = await texto("cerrar_bimestre", cliente=CLIENTE, anio="2026", bimestre="1")
+        assert "del 2026-01-01 al 2026-02-28" in t and "no_validadas" in t and "CUFE" in t
+        t = await texto("cerrar_bimestre", cliente=CLIENTE, anio="2026", bimestre="6")
+        assert "del 2026-11-01 al 2026-12-31" in t
+        t = await texto("cerrar_bimestre", cliente=CLIENTE, anio="2028", bimestre="1")
+        assert "al 2028-02-29" in t
+        with pytest.raises(MCPError):  # fuera del rango que publica el esquema
+            await texto("cerrar_bimestre", cliente=CLIENTE, anio="2026", bimestre="7")
+
+        assert "Descargas" in await texto("cargar_facturas")
+        assert "facturas enero" in await texto("cargar_facturas", carpeta="facturas enero")
+        t = await texto(
+            "revisar_proveedor",
+            cliente=CLIENTE,
+            proveedor="Claro",
+            desde="2026-01-01",
+            hasta="2026-06-30",
+        )
+        assert "Claro" in t and "compras_por_proveedor" in t

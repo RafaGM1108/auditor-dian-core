@@ -12,7 +12,7 @@ import os
 import re
 import secrets
 import unicodedata
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal
 from importlib.metadata import version
 from pathlib import Path
@@ -440,6 +440,68 @@ def no_validadas(cliente: Cliente, desde: Desde, hasta: Hasta) -> dict:
 
     Sin respuesta no significa inválida: puede que el emisor no la haya incluido en el ZIP."""
     return _informe(cliente, "no_validadas", desde, hasta)
+
+
+# Prompts (#15): aparecen como comandos listos en Claude Desktop y claude.ai, para quien no sabe
+# qué preguntar. Solo arman la petición; las cifras siguen saliendo de las herramientas.
+CITAR = (
+    "Cita las cifras tal como vienen, con sus CUFE, sin sumarlas ni redondearlas, y termina "
+    "con el aviso de que requieren revisión del contador."
+)
+
+
+@servidor.prompt(title="Cargar mis facturas")
+def cargar_facturas(
+    carpeta: Annotated[
+        str | None,
+        Field(description="Dónde están, como la nombra el usuario. Sin ella, Descargas."),
+    ] = None,
+) -> str:
+    """Carga las facturas descargadas del correo y las reparte por cliente."""
+    donde = f"de la carpeta {carpeta}" if carpeta else "de mi carpeta de Descargas"
+    return (
+        f"Carga mis facturas {donde} con ingerir_por_cliente y muéstrame, por cliente, cuántos "
+        "documentos quedaron cargados. Si hay compradores que todavía no tengo como clientes, "
+        "muéstramelos con su nombre y pregúntame si los creo. Dime también qué archivos no se "
+        "pudieron cargar y por qué."
+    )
+
+
+@servidor.prompt(title="Cerrar el bimestre")
+def cerrar_bimestre(
+    cliente: Cliente,
+    anio: Annotated[int, Field(description="Año, p. ej. 2026.")],
+    bimestre: Annotated[
+        int, Field(ge=1, le=6, description="1 = enero y febrero … 6 = noviembre y diciembre.")
+    ],
+) -> str:
+    """Revisión de un bimestre antes de declarar IVA: compras, IVA por tarifa, retenciones y lo
+    que hay que revisar (duplicados, anulaciones, facturas a crédito y sin validar)."""
+    desde = date(anio, 2 * bimestre - 1, 1)
+    hasta = date(anio + bimestre // 6, (2 * bimestre) % 12 + 1, 1) - timedelta(days=1)
+    return (
+        f"Revisa el cierre del bimestre {bimestre} de {anio} (del {desde} al {hasta}) del "
+        f"cliente {cliente}. Usa resumen_periodo para las compras, el IVA por tarifa y las "
+        "retenciones; luego duplicados_y_anulaciones, facturas_credito y no_validadas del mismo "
+        "periodo. Presenta primero las cifras y después, aparte, lo que debo revisar antes de "
+        f"declarar: posibles duplicados, anulaciones y facturas sin validación DIAN. {CITAR}"
+    )
+
+
+@servidor.prompt(title="Revisar un proveedor")
+def revisar_proveedor(
+    cliente: Cliente,
+    proveedor: Annotated[str, Field(description="NIT o parte del nombre del proveedor.")],
+    desde: Desde,
+    hasta: Hasta,
+) -> str:
+    """Todo lo de un proveedor en el periodo: total comprado, facturas, notas y anulaciones."""
+    return (
+        f"Del cliente {cliente}, revisa al proveedor {proveedor} entre el {desde} y el {hasta}: "
+        "su total con compras_por_proveedor, sus documentos con buscar_documentos (emisor = el "
+        "proveedor) y si tiene duplicados o anulaciones con duplicados_y_anulaciones. Si el "
+        f"nombre coincide con varios NIT, pregúntame cuál es. {CITAR}"
+    )
 
 
 @herramienta("Exportar informe a Excel", AGREGA)

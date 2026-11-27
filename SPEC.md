@@ -112,6 +112,8 @@ Las consultas abren la base en modo solo lectura. Las herramientas de carga (`cr
 | `ingerir_por_cliente` | ruta opcional (sin ella, la carpeta de Descargas) | por cliente: lo cargado; compradores sin cliente creado; archivos sin asignar con su motivo |
 | `diagnostico` | — | versión, carpeta de datos, plugins y, por cliente, conteos y advertencias de lectura, sin montos |
 
+Prompts (*agregados el 2026-11-26*): `cargar_facturas` (carpeta opcional), `cerrar_bimestre` (cliente, año, bimestre 1–6; el periodo lo calcula el código) y `revisar_proveedor` (cliente, proveedor, desde, hasta). Solo arman la petición; las cifras salen de las herramientas.
+
 Además de stdio, `auditor mcp --http` sirve las mismas herramientas por Streamable HTTP solo en `127.0.0.1`, en `/mcp/<token>`, para exponerlas con un túnel a claude.ai y al celular sin sacar las bases del equipo (decisión 0014, *agregado el 2026-11-26*).
 
 Cada respuesta incluye el texto: *"Cifras calculadas a partir de los documentos cargados. Requiere revisión del contador."*
