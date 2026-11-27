@@ -205,6 +205,7 @@ mi_plugin = "mi_paquete:register"
 
 ## Documentación
 
+- [Página para contadores](https://rafagm1108.github.io/auditor-dian-core/): qué es, cómo instalarlo y qué preguntarle, sin detalles técnicos.
 - [`SPEC.md`](SPEC.md): alcance y reglas del proyecto.
 - [`docs/decisiones/`](docs/decisiones/README.md): cada decisión de diseño, con sus alternativas descartadas.
 - [`docs/investigacion/`](docs/investigacion/README.md): cifras, normas y herramientas existentes, con fuentes públicas.
