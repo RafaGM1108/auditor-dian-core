@@ -68,7 +68,7 @@ Montos, precios, cantidades y TRM en `DECIMAL(21,6)`; tarifas en `DECIMAL(9,3)`;
 | `compras_por_proveedor` | Totales por NIT emisor en un rango de fechas; notas crédito restan, notas débito suman. |
 | `iva_compras_por_bimestre` | IVA facturado en compras por bimestre, neto de notas. **Es el IVA que aparece en documentos, no una determinación de IVA descontable** (eso lo decide el contador). |
 | `retenciones` | Retenciones que figuran en los documentos, por tipo y periodo. En facturas y documento soporte son **autorretenciones declaradas por el emisor** (`WithholdingTaxTotal`; Anexo FE 1.9 FAT01, Anexo DS 1.1 DSAT01), no las retenciones que practica el cliente; el informe debe decirlo. |
-| `duplicados_y_anulaciones` | Mismo emisor+número con distinto CUFE; facturas anuladas total o parcialmente por notas crédito. |
+| `duplicados_y_anulaciones` | Mismo emisor+número con distinto CUFE; facturas anuladas total o parcialmente por notas crédito; `anulada_sin_repartir` si una nota cita varias facturas y no se sabe cuánto le toca a cada una (decisión 0013, *2026-11-26*). |
 | `facturas_credito` | Documentos con forma de pago crédito (`PaymentMeans/ID` = `2`). La fecha de vencimiento se muestra pero no decide: hay emisores que la ponen en ventas de contado. Columna `eventos`: `"por verificar"` (core no consulta la DIAN). |
 | `no_validadas` | Documentos sin respuesta de validación DIAN en el contenedor. |
 
