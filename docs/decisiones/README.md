@@ -19,3 +19,4 @@ Una decisión no se edita después de tomada: si cambia, se escribe una nota nue
 | [0011](0011-filtros-entre-clientes.md) | La información de un cliente nunca termina en otro | 2026-11-20 |
 | [0012](0012-publicacion-con-historial-aparte.md) | Publicación en un repositorio nuevo, con el historial aparte | 2026-11-20 |
 | [0013](0013-nota-credito-sobre-varias-facturas.md) | Nota crédito que cita varias facturas | 2026-11-26 |
+| [0014](0014-servidor-por-http-con-tunel.md) | Servidor por HTTP detrás de un túnel, para claude.ai y el celular | 2026-11-26 |

@@ -12,6 +12,22 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha, qué se hizo, 
 
 
 
+## 2026-11-26 — Servidor por HTTP para claude.ai y el celular (#21)
+
+**Qué se hizo**
+- `auditor mcp --http [--puerto 8765] [--dominio …]`: Streamable HTTP solo en `127.0.0.1`, en `/mcp/<token>`, con protección contra DNS rebinding y sin estado entre pedidos. Decisión [0014](decisiones/0014-servidor-por-http-con-tunel.md).
+- Token de 256 bits creado una vez en la carpeta de datos con permisos 600 (o `AUDITOR_DIAN_TOKEN`). El comando dice dónde leerlo, sin imprimirlo.
+- Prueba de punta a punta con el comando como subproceso: responde con el token; sin él o con otro, 404; con otro dominio, 421; con otro origen, 403.
+- Guía en el README con Tailscale Funnel.
+
+**Qué se aprendió**
+- En claude.ai, el token en encabezados de un conector está en beta para pocas organizaciones; el conector sin inicio de sesión funciona en todos los planes. Por eso el secreto va en la ruta.
+- Sin configuración, el SDK de MCP deja apagada la protección contra DNS rebinding.
+- pytest-cov 7 ya no mide subprocesos: la prueba de punta a punta valida el comportamiento y otra, en proceso, cubre el código.
+
+**Problemas encontrados**
+- El SDK 2.3 ya no trae `httpx`; las pruebas usan `urllib`.
+
 ## 2026-11-27 — Reintentos de carga y registro en MCP
 
 La lista de herramientas publica `idempotentHint` para las dos cargas de facturas y el registro de clientes. Las cargas reconocen los archivos y documentos ya ingresados, y registrar de nuevo el mismo NIT devuelve su historial. La prueba de `tools/list` comprueba las tres anotaciones y que la exportación a Excel queda fuera.
