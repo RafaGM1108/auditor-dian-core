@@ -66,7 +66,7 @@
     },
     {
       "name": "duplicados_y_anulaciones",
-      "description": "Facturas del mismo proveedor y número con distinto CUFE (posibles duplicados) y facturas anuladas total o parcialmente por notas crédito (tolerancia de 2 pesos)."
+      "description": "Facturas del mismo proveedor y número con distinto CUFE (posibles duplicados) y facturas anuladas total o parcialmente por notas crédito (tolerancia de 2 pesos). Si una nota cita varias facturas y no se sabe cuánto le toca a cada una, sale como anulada_sin_repartir: pídale al usuario que la revise."
     },
     {
       "name": "compras_por_proveedor",

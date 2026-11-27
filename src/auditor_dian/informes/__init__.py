@@ -36,7 +36,8 @@ NOTAS = {
     "FAT01, Anexo DS 1.1 DSAT01), no retenciones practicadas por el cliente. " + NOTA_MONEDA,
     "duplicados_y_anulaciones": "Documentos con el mismo emisor y número pero distinto CUFE, y "
     "facturas citadas por notas crédito: anulada_total si las notas suman su total con ±2,00 "
-    "(Anexo FE 1.9, 5.2.1.1), anulada_parcial si no. " + NOTA_MONEDA,
+    "(Anexo FE 1.9, 5.2.1.1), anulada_parcial si no, y anulada_sin_repartir si una nota cita "
+    "varias facturas sin que se sepa cuánto le toca a cada una (decisión 0013). " + NOTA_MONEDA,
     "facturas_credito": "Documentos con forma de pago crédito; la fecha de vencimiento no "
     "decide, porque hay emisores que la ponen en ventas de contado. Los eventos (aceptación, "
     "endoso) quedan por verificar: este programa no consulta a la DIAN. " + NOTA_MONEDA,

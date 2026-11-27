@@ -12,6 +12,18 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha, qué se hizo, 
 
 
 
+## 2026-11-26 — Nota crédito sobre varias facturas (#7)
+
+**Qué se hizo**
+- `duplicados_y_anulaciones` ya no descuenta el total completo de una nota de cada factura que cita. Si la nota suma lo mismo que todas sus facturas (±2,00), cada una descuenta su propio total; si no, sale como `anulada_sin_repartir` para que el contador la revise. Decisión [0013](decisiones/0013-nota-credito-sobre-varias-facturas.md).
+- Tres pruebas nuevas: nota que anula dos facturas completas, nota que no cuadra con ninguna y nota que cita una factura sin cargar.
+
+**Qué se aprendió**
+- El XML de la nota no dice cuánto le toca a cada factura que cita; repartir en proporción sería inventar una cifra.
+
+**Problemas encontrados**
+- Ninguno.
+
 ## 2026-11-26 — Los seis informes se consultan desde el chat (#11)
 
 **Qué se hizo**

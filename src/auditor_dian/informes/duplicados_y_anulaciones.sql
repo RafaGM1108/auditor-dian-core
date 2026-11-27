@@ -13,28 +13,43 @@ FROM (
 )
 WHERE repetidos > 1
 UNION ALL
-SELECT CASE WHEN abs(d.total_pagar - a.valor_notas) <= 2 THEN 'anulada_total'
+SELECT CASE WHEN a.sin_repartir THEN 'anulada_sin_repartir'
+            WHEN abs(d.total_pagar - a.valor_notas) <= 2 THEN 'anulada_total'
             ELSE 'anulada_parcial' END,
        d.fecha_emision, d.tipo, d.numero, d.cufe, d.emisor_identificacion, d.emisor_nombre,
        d.moneda, d.total_pagar, a.valor_notas, a.notas
 FROM docs d
 JOIN (
-    -- shortcut: una nota que cita varias facturas descuenta su total completo de cada una;
-    -- revisar si aparece un caso real.
-    SELECT f.cufe, sum(n.total_pagar) AS valor_notas,
-           string_agg(n.nota, ', ' ORDER BY n.nota) AS notas
-    FROM docs f
-    JOIN (
-        SELECT n.numero AS nota, n.total_pagar, n.emisor_identificacion, r.cufe_referenciado,
-               r.numero
-        FROM documentos n
-        JOIN referencias r USING (cufe)
-        WHERE n.tipo = '91' AND n.adquirente_identificacion = (SELECT id FROM cliente)
-    ) n ON n.cufe_referenciado = f.cufe
-        OR (n.cufe_referenciado IS NULL AND n.numero = f.numero
-            AND n.emisor_identificacion = f.emisor_identificacion)
-    -- Facturas: 01, 02, 03 y 04 (Caja de Herramientas FE 1.9, tabla 13.1.3).
-    WHERE f.tipo IN ('01', '02', '03', '04')
-    GROUP BY f.cufe
+    SELECT cufe, sum(parte) AS valor_notas, bool_or(parte IS NULL) AS sin_repartir,
+           string_agg(nota, ', ' ORDER BY nota) AS notas
+    FROM (
+        -- Lo que cada nota descuenta de cada factura que cita (decisión 0013): todo su total
+        -- si cita una sola; si cita varias, cada factura su propio total cuando la nota suma lo
+        -- mismo que todas (±2,00) y están todas cargadas; si no, el reparto no se sabe (NULL).
+        SELECT cufe, nota,
+               CASE WHEN citadas = 1 THEN total_nota
+                    WHEN count(*) OVER nota = citadas
+                         AND abs(total_nota - sum(total_factura) OVER nota) <= 2
+                    THEN total_factura
+               END AS parte
+        FROM (
+            SELECT n.cufe AS nota_cufe, n.numero AS nota, n.total_pagar AS total_nota,
+                   f.cufe, f.total_pagar AS total_factura,
+                   (SELECT count(*) FROM referencias c WHERE c.cufe = n.cufe) AS citadas
+            FROM documentos n
+            JOIN referencias r ON r.cufe = n.cufe
+            -- Facturas: 01, 02, 03 y 04 (Caja de Herramientas FE 1.9, tabla 13.1.3), de
+            -- cualquier fecha: una nota de marzo puede citar facturas de febrero y de marzo.
+            JOIN documentos f
+              ON f.tipo IN ('01', '02', '03', '04')
+             AND f.adquirente_identificacion = n.adquirente_identificacion
+             AND (r.cufe_referenciado = f.cufe
+                  OR (r.cufe_referenciado IS NULL AND r.numero = f.numero
+                      AND n.emisor_identificacion = f.emisor_identificacion))
+            WHERE n.tipo = '91' AND n.adquirente_identificacion = (SELECT id FROM cliente)
+        )
+        WINDOW nota AS (PARTITION BY nota_cufe)
+    )
+    GROUP BY cufe
 ) a USING (cufe)
 ORDER BY hallazgo, emisor_identificacion, numero, fecha_emision
