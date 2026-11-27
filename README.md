@@ -150,11 +150,13 @@ Pídele a Claude *"dame el diagnóstico de Auditor DIAN"* y abre un [reporte](ht
 
 ## Para desarrolladores
 
+¿Quieres aportar? Lee [CONTRIBUTING.md](CONTRIBUTING.md) y mira las issues [`good first issue`](https://github.com/RafaGM1108/auditor-dian-core/labels/good%20first%20issue).
+
 Requiere [uv](https://docs.astral.sh/uv/) y Python 3.11 o superior.
 
 ```bash
 uv sync
-uv run pytest            # 142 pruebas
+uv run pytest            # 154 pruebas
 uv run ruff check .
 ```
 
