@@ -1,3 +1,4 @@
+import logging
 import os
 from datetime import datetime
 from decimal import ROUND_HALF_UP, Decimal
@@ -144,6 +145,16 @@ def mcp(
         f"URL del conector: https://{(dominio or ['<dominio del túnel>'])[0]}/mcp/<token>",
         err=True,
     )
+
+    # Uvicorn anota la ruta de cada pedido, y la ruta lleva el token: se tapa antes de escribirla.
+    def ocultar_token(registro: logging.LogRecord) -> bool:
+        if isinstance(registro.args, tuple):
+            registro.args = tuple(
+                a.replace(token, "<token>") if isinstance(a, str) else a for a in registro.args
+            )
+        return True
+
+    logging.getLogger("uvicorn.access").addFilter(ocultar_token)
     servidor.run(
         "streamable-http",
         host="127.0.0.1",  # nunca en la red: solo el túnel llega a él

@@ -298,6 +298,7 @@ async def test_auditor_mcp_responde_por_http_solo_con_su_token_y_dominio(base, i
         [str(Path(sys.executable).with_name("auditor")), "mcp", "--http"]
         + ["--puerto", str(puerto), "--dominio", "mi-pc.ejemplo.ts.net"],
         env={**os.environ, "AUDITOR_DIAN_HOME": str(inicio_temporal)},
+        stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
     )
@@ -351,9 +352,9 @@ async def test_auditor_mcp_responde_por_http_solo_con_su_token_y_dominio(base, i
         assert post(f"/mcp/{token}", Origin="https://atacante.com") == 403
     finally:
         proceso.send_signal(signal.SIGINT)  # apagado ordenado, como Ctrl+C
-        _, errores = proceso.communicate(timeout=10)
+        salida, errores = proceso.communicate(timeout=10)
     assert "URL del conector: https://mi-pc.ejemplo.ts.net/mcp/<token>" in errores
-    assert token not in errores  # el token no queda en los registros
+    assert token not in salida + errores  # ni en los registros de cada pedido
 
 
 @pytest.mark.anyio
@@ -413,6 +414,23 @@ def test_comando_mcp_http_escucha_solo_en_localhost_con_el_token(monkeypatch, in
     assert seguridad.enable_dns_rebinding_protection
     assert seguridad.allowed_hosts == ["127.0.0.1:8765", "localhost:8765", "mi-pc.ejemplo.ts.net"]
     assert "token-mcp" in r.output and token not in r.output
+
+    # El registro de acceso de uvicorn muestra la ruta con el token tapado.
+    import logging
+
+    acceso = logging.getLogger("uvicorn.access")
+    (ocultar,) = acceso.filters
+    registro = logging.LogRecord(
+        "uvicorn.access",
+        logging.INFO,
+        "",
+        0,
+        '%s - "%s %s" %d',
+        ("::1", "POST", f"/mcp/{token}", 200),
+        None,
+    )
+    assert ocultar(registro) and registro.getMessage() == '::1 - "POST /mcp/<token>" 200'
+    acceso.removeFilter(ocultar)
 
 
 def test_nombres_de_herramientas_y_parametros_validos_para_la_api_de_claude():

@@ -12,7 +12,7 @@ Subir las bases a un servidor en la nube rompería la garantía principal del RE
 
 - **El servidor sigue en el equipo del contador.** `auditor mcp --http` lo sirve por Streamable HTTP escuchando solo en `127.0.0.1`. Un túnel lo expone en una URL pública.
 - **Túnel recomendado: Tailscale Funnel.** Es gratis, da una URL fija `*.ts.net` en el puerto 443 y el TLS termina en el propio equipo, así que nadie en medio ve la URL ni las respuestas.
-- **La URL lleva un secreto de 256 bits** (`/mcp/<token>`); cualquier otra ruta responde 404. El token se crea una vez en la carpeta de datos con permisos 600, o se toma de `AUDITOR_DIAN_TOKEN`. Nunca se imprime: el comando dice dónde leerlo.
+- **La URL lleva un secreto de 256 bits** (`/mcp/<token>`); cualquier otra ruta responde 404. El token se crea una vez en la carpeta de datos con permisos 600, o se toma de `AUDITOR_DIAN_TOKEN`. Nunca se imprime: el comando dice dónde leerlo, y el registro de acceso de uvicorn lo muestra como `<token>` (*corregido el 2026-11-26*: antes cada pedido lo escribía completo).
 - **Protección contra DNS rebinding activa**: solo se aceptan el dominio del túnel (`--dominio`) y localhost. El SDK la deja apagada si no se configura.
 - **Sin estado entre pedidos** (`stateless_http`): reiniciar el servidor no rompe el conector.
 
