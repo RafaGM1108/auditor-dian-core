@@ -12,6 +12,18 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha, qué se hizo, 
 
 
 
+## 2026-11-26 — Prompts: cargar facturas, cerrar el bimestre y revisar un proveedor (#15)
+
+**Qué se hizo**
+- Tres prompts MCP que aparecen como atajos en Claude Desktop y claude.ai. Solo arman la petición y nombran las herramientas que deben usarse; las cifras siguen saliendo de ellas.
+- En `cerrar_bimestre`, las fechas del periodo las calcula el código, no el modelo (diciembre y febrero bisiesto probados). El rango 1–6 va en el esquema.
+
+**Qué se aprendió**
+- Si un prompt lanza un error, el SDK le responde al cliente "Internal server error" sin el mensaje; por eso el rango del bimestre se valida en el esquema y no con una excepción propia.
+
+**Problemas encontrados**
+- Ninguno.
+
 ## 2026-11-26 — El token ya no queda en el registro de acceso
 
 **Qué se hizo**
