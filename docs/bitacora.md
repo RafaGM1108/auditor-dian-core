@@ -12,6 +12,19 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha, qué se hizo, 
 
 
 
+## 2026-11-26 — Guía para contribuir (#2)
+
+**Qué se hizo**
+- `CONTRIBUTING.md` con el entorno, las reglas del proyecto y la documentación que acompaña cada cambio; `CODE_OF_CONDUCT.md`; plantilla de pull request con lista de chequeo.
+- El formulario de nueva issue manda las preguntas a Discussions y las vulnerabilidades al reporte privado.
+- Se activó el reporte privado de vulnerabilidades del repositorio: `SECURITY.md` ya lo indicaba, pero estaba apagado.
+
+**Qué se aprendió**
+- Llegó el primer aporte externo (#18) por una `good first issue`; la guía es para que el siguiente no tenga que adivinar las reglas.
+
+**Problemas encontrados**
+- Ninguno.
+
 ## 2026-11-26 — Prompts: cargar facturas, cerrar el bimestre y revisar un proveedor (#15)
 
 **Qué se hizo**
