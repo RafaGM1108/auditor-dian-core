@@ -225,6 +225,73 @@ def test_duplicados_y_anulaciones(tmp_path):
     ]
 
 
+def nota_sobre_fv1001_y_fv1002(total: str) -> str:
+    """NC60 que cita FV1001 y FV1002 (dos BillingReference), con el total dado."""
+    segunda = (
+        "<cac:BillingReference><cac:InvoiceDocumentReference><cbc:ID>FV1002</cbc:ID>"
+        f'<cbc:UUID schemeName="CUFE-SHA384">{cufe("12")}</cbc:UUID>'
+        "<cbc:IssueDate>2026-01-15</cbc:IssueDate></cac:InvoiceDocumentReference>"
+        "</cac:BillingReference>\n  <cac:AccountingSupplierParty>"
+    )
+    nc55 = "cude" + "0" * 88 + "091"
+    return copia(
+        "nota_credito_91.xml",
+        NC55="NC60",
+        **{
+            nc55: nc55[:-3] + "060",
+            "<cac:AccountingSupplierParty>": segunda,
+            '"COP">10500.00</cbc:PayableAmount>': f'"COP">{total}</cbc:PayableAmount>',
+        },
+    )
+
+
+@pytest.mark.parametrize(
+    ("total_nota", "esperado"),
+    [
+        # 150.500 + 155.500: anula las dos, cada una por su propio total.
+        (
+            "306000.00",
+            [
+                ("anulada_total", "FV1001", Decimal("150500"), "NC60"),
+                ("anulada_total", "FV1002", Decimal("155500"), "NC60"),
+            ],
+        ),
+        # No suma lo que las dos facturas: no se sabe cuánto le toca a cada una.
+        (
+            "100000.00",
+            [
+                ("anulada_sin_repartir", "FV1001", None, "NC60"),
+                ("anulada_sin_repartir", "FV1002", None, "NC60"),
+            ],
+        ),
+    ],
+)
+def test_nota_que_cita_varias_facturas_no_descuenta_su_total_de_cada_una(
+    tmp_path, total_nota, esperado
+):
+    archivos = {
+        "FV1001.xml": fixture("factura_01.xml"),  # total 150.500
+        "FV1002.xml": fixture("factura_cargo_01.xml"),  # total 155.500
+        "NC60.xml": nota_sobre_fv1001_y_fv1002(total_nota),
+    }
+    with base_aparte(tmp_path, archivos) as c:
+        r = ejecutar(c, "duplicados_y_anulaciones", date(2026, 1, 1), date(2026, 1, 31))
+
+    assert [(f[0], f[3], f[9], f[10]) for f in r.filas] == esperado
+
+
+def test_nota_que_cita_una_factura_sin_cargar_no_se_reparte(tmp_path):
+    # Cita FV1001 y FV1002, pero solo FV1001 está cargada: su total no es todo de FV1001.
+    archivos = {
+        "FV1001.xml": fixture("factura_01.xml"),
+        "NC60.xml": nota_sobre_fv1001_y_fv1002("150500.00"),
+    }
+    with base_aparte(tmp_path, archivos) as c:
+        r = ejecutar(c, "duplicados_y_anulaciones", date(2026, 1, 1), date(2026, 1, 31))
+
+    assert [(f[0], f[3], f[9]) for f in r.filas] == [("anulada_sin_repartir", "FV1001", None)]
+
+
 def test_facturas_credito_por_forma_de_pago(con):
     r = ejecutar(con, "facturas_credito", date(2026, 1, 1), date(2026, 3, 31))
 

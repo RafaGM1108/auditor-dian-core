@@ -16,6 +16,18 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha, qué se hizo, 
 
 La lista de herramientas publica `idempotentHint` para las dos cargas de facturas y el registro de clientes. Las cargas reconocen los archivos y documentos ya ingresados, y registrar de nuevo el mismo NIT devuelve su historial. La prueba de `tools/list` comprueba las tres anotaciones y que la exportación a Excel queda fuera.
 
+## 2026-11-26 — Nota crédito sobre varias facturas (#7)
+
+**Qué se hizo**
+- `duplicados_y_anulaciones` ya no descuenta el total completo de una nota de cada factura que cita. Si la nota suma lo mismo que todas sus facturas (±2,00), cada una descuenta su propio total; si no, sale como `anulada_sin_repartir` para que el contador la revise. Decisión [0013](decisiones/0013-nota-credito-sobre-varias-facturas.md).
+- Tres pruebas nuevas: nota que anula dos facturas completas, nota que no cuadra con ninguna y nota que cita una factura sin cargar.
+
+**Qué se aprendió**
+- El XML de la nota no dice cuánto le toca a cada factura que cita; repartir en proporción sería inventar una cifra.
+
+**Problemas encontrados**
+- Ninguno.
+
 ## 2026-11-26 — Los seis informes se consultan desde el chat (#11)
 
 **Qué se hizo**

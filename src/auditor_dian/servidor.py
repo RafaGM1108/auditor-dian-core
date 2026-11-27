@@ -367,7 +367,9 @@ def facturas_credito(cliente: Cliente, desde: Desde, hasta: Hasta) -> dict:
 @herramienta("Facturas repetidas y anuladas", LECTURA)
 def duplicados_y_anulaciones(cliente: Cliente, desde: Desde, hasta: Hasta) -> dict:
     """Facturas del mismo proveedor y número con distinto CUFE (posibles duplicados) y facturas
-    anuladas total o parcialmente por notas crédito (tolerancia de 2 pesos).
+    anuladas total o parcialmente por notas crédito (tolerancia de 2 pesos). Si una nota cita
+    varias facturas y no se sabe cuánto le toca a cada una, sale como anulada_sin_repartir: pídale
+    al usuario que la revise.
 
     Úsela cuando el usuario pregunte, por ejemplo:
     - "¿Hay facturas repetidas?"
