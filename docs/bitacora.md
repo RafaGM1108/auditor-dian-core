@@ -12,6 +12,18 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha, qué se hizo, 
 
 
 
+## 2026-11-26 — El token ya no queda en el registro de acceso
+
+**Qué se hizo**
+- Al dejar el servidor como servicio, el registro del sistema mostraba el token: uvicorn anota la ruta de cada pedido y la ruta lo lleva. Un filtro en `uvicorn.access` lo reemplaza por `<token>`.
+- La prueba de punta a punta revisa ahora la salida estándar además de la de errores; antes solo miraba la segunda y no lo detectó.
+
+**Qué se aprendió**
+- Desactivar el logger no sirve: uvicorn reconfigura el registro al arrancar. Un filtro sí se conserva.
+
+**Problemas encontrados**
+- El token que alcanzó a quedar en el registro se cambió.
+
 ## 2026-11-26 — Servidor por HTTP para claude.ai y el celular (#21)
 
 **Qué se hizo**
